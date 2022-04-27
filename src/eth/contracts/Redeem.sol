@@ -8,15 +8,25 @@ contract Redeem {
 
     struct NumOrders {
 
-        uint service_count;
+        uint service_order_count;
     }
 
     mapping(address => NumOrders) public redeemable_orders;
-    mapping(address => NumOrders) public orders_to_date;
+    mapping(address => NumOrders) public redeemed_to_date;
+    mapping(address => NumOrders) public purchased_to_date;
 
     // Allows us to know if the service contract was connected
     bool contract_connected = false;
     ExternalServices service_contract;
+
+    function connect_service_contract(address _address) public {
+
+        service_contract = ExternalServices(_address);
+        contract_connected = true;
+
+        determine_redeemable();
+    }
+
 
     // May want to change to public later
     function determine_redeemable() private {
@@ -27,16 +37,21 @@ contract Redeem {
         );
 
         customer = msg.sender;
-        
+
+        uint256 _temp;
+        (_temp, redeemed_to_date[customer].service_order_count) = read_orders();
+
+        redeemable_orders[customer].service_order_count = purchased_to_date[customer].service_order_count - redeemed_to_date[customer].service_order_count;
     }
 
 
-    function connect_service_contract(address _address) public {
+    function redeem_order() public {
 
-        service_contract = ExternalServices(_address);
-        contract_connected = true;
+        customer = msg.sender;
 
-        // TODO find redeemable
+        determine_redeemable();
+        redeemable_orders[customer].service_order_count++;
+        determine_redeemable();
     }
 
 
@@ -51,6 +66,7 @@ contract Redeem {
         return (service_contract.orders(customer));
     }
 }
+
 
 contract ExternalServices {
 

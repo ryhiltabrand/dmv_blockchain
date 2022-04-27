@@ -38,13 +38,14 @@ contract Service {
         uint id;
         string name;
         uint256 cost;
+        uint times_ordered;
     }
 
 
     struct Orders {
 
         uint256 wallet_bal;
-        uint service_count;
+        uint order_count;
     }
 
     // Maps services to IDs (i.e. 1 => "Permit test")
@@ -54,7 +55,7 @@ contract Service {
     function add_service(string memory _name) private {
 
         num_services++;
-        services[num_services] = Services(num_services, _name, price);
+        services[num_services] = Services(num_services, _name, price, 0);
     }
 
 
@@ -118,7 +119,7 @@ contract Service {
             "Error: Invalid selection"
         );
 
-        orders[customer].service_count = _count;
+        orders[customer].order_count = _count;
         make_payment(total_cost);
 
         return true;
