@@ -7,13 +7,13 @@ contract Service {
     // In units of wei
     uint256 price;
 
-    uint service_id;
+    uint num_services;
     address payable public customer;
 
     constructor() {
 
         price = 100000000000;
-        service_id = 0;
+        num_services = 0;
 
         // Online Services
         add_service("Vehicle Registration Renewal");
@@ -37,12 +37,12 @@ contract Service {
         uint id;
         string name;
         uint256 cost;
-        uint times_ordered;
     }
 
     struct Orders {
 
         uint256 wallet_bal;
+        uint service_count;
     }
 
     // Maps services to IDs (i.e. 1 => "Permit test")
@@ -51,8 +51,8 @@ contract Service {
 
     function add_service(string memory _name) private {
 
-        service_id++;
-        services[service_id] = Services(service_id, _name, price, 0);
+        num_services++;
+        services[num_services] = Services(num_services, _name, price);
     }
 
 
@@ -69,8 +69,7 @@ contract Service {
 
     function set_service_cost() private {
 
-        // 10 represents the # of services we have
-        for (uint i = 0; i < 10; i++) {
+        for (uint i = 0; i < num_services; i++) {
 
             services[i].cost = price;
         }
@@ -96,24 +95,38 @@ contract Service {
         orders[customer].wallet_bal -= _total_cost;
     }
 
-    function customer_selection(uint _serviceID) public payable returns (bool) {
+    function customer_selection(uint _serviceID, uint _count) public payable returns (bool) {
 
         customer = payable(msg.sender);
+        uint256 total_cost = _count * services[_serviceID].cost;
 
         // Ensure the customer can afford to make the purchase
         require(
-            orders[customer].wallet_bal >= services[_serviceID].cost,
+            orders[customer].wallet_bal >= total_cost,
             "Error: Insufficient funds. Please check the cost of the service"
         );
 
         require(
-            (_serviceID > 0 && _serviceID < 10),
+            (_serviceID > 0 && _serviceID < num_services),
             "Error: Invalid selection"
         );
 
-        uint256 total_cost = services[_serviceID].cost;
-        services[_serviceID].times_ordered++;
+        orders[customer].service_count = _count;
+        make_payment(total_cost);
 
-        // TODO
+        return true;
+    }
+
+    function return_overpay() public payable {
+
+        customer = payable(msg.sender);
+
+        require(
+            orders[customer].wallet_bal > 0,
+            "Error: No funds to return"
+        );
+
+        customer.transfer(orders[customer].wallet_bal);
+        orders[customer].wallet_bal = 0;
     }
 }
