@@ -12,7 +12,7 @@ contract Service {
 
     constructor() {
 
-        price = 100000000000;
+        price = 100000000000;   // 100,000,000,000 Wei (100 Gwei)
         num_services = 0;
 
         // Online Services
@@ -32,17 +32,20 @@ contract Service {
         add_service("Title a Vehicle in Virginia");
     }
 
+
     struct Services {
 
         uint id;
         string name;
         uint256 cost;
+        uint times_ordered;
     }
+
 
     struct Orders {
 
         uint256 wallet_bal;
-        uint service_count;
+        uint order_count;
     }
 
     // Maps services to IDs (i.e. 1 => "Permit test")
@@ -52,7 +55,7 @@ contract Service {
     function add_service(string memory _name) private {
 
         num_services++;
-        services[num_services] = Services(num_services, _name, price);
+        services[num_services] = Services(num_services, _name, price, 0);
     }
 
 
@@ -61,11 +64,13 @@ contract Service {
         return price;
     }
 
+
     function set_price(uint256 _price) public {
 
         price = _price;
         set_service_cost();
     }
+
 
     function set_service_cost() private {
 
@@ -74,6 +79,7 @@ contract Service {
             services[i].cost = price;
         }
     }
+
 
     // Function allows for the customer to deposit funds into the contract
     function deposit() public payable returns (uint256, uint256) {
@@ -89,11 +95,13 @@ contract Service {
         return (address(this).balance, orders[customer].wallet_bal);
     }
 
+
     // User payment
     function make_payment(uint256 _total_cost) private {
 
         orders[customer].wallet_bal -= _total_cost;
     }
+
 
     function customer_selection(uint _serviceID, uint _count) public payable returns (bool) {
 
@@ -111,11 +119,12 @@ contract Service {
             "Error: Invalid selection"
         );
 
-        orders[customer].service_count = _count;
+        orders[customer].order_count = _count;
         make_payment(total_cost);
 
         return true;
     }
+
 
     function return_overpay() public payable {
 
