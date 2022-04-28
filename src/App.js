@@ -20,10 +20,20 @@ function Test() {
     </div>
   )
 }
+
 function Home() {
   return (
-    <div>
-      Home
+    <div style={{width: '50%', height: '50%', margin: '0 auto', textAlign: 'center', padding: '250px'}}>
+      <div style={{background: 'white', borderRadius: '10px', padding: '10px'}}>
+        <h1>Welcome to the DMV!</h1>
+        <p>
+          Ensure the <a href={'https://trufflesuite.com/ganache/'} target={'_blank'}>Ganache</a> server is running
+          <br></br>
+          and
+          <br></br>
+           it has been connected to <a href={'https://metamask.io/'} target={'_blank'}>Metamask</a>
+        </p>
+      </div>
     </div>
   )
 }
@@ -46,7 +56,7 @@ class App extends Component {
   async componentDidMount() {
 
     let provider = window.ethereum;
-    
+
 
     if (typeof provider !== 'undefined') {
       provider.request({ method: 'eth_requestAccounts' }).then((accounts) => {
@@ -62,7 +72,7 @@ class App extends Component {
     const web3 = new Web3(provider)
     this.setState({web3: web3})
     const networkId = await web3.eth.net.getId();
-    
+
     let serviceContract
     let userContract
     let redeemContract

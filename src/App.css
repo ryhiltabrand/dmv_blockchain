@@ -36,3 +36,12 @@
     transform: rotate(360deg);
   }
 }
+
+body {
+  background-image: url('./dmv_bg.jpg');
+  height: 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-size: cover;
+}
