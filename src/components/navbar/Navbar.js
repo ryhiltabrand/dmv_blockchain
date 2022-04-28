@@ -1,8 +1,7 @@
-import { Link } from "react-router-dom";
+//import { Link } from "react-router-dom";
 import { Nav, Navbar, Container, NavDropdown } from "react-bootstrap";
 import React from "react";
 import 'bootstrap/dist/css/bootstrap.css';
-import Logo from './dmv.svg'
 
 const OurNavbar = () => {
   return (
@@ -11,8 +10,8 @@ const OurNavbar = () => {
         <Navbar.Brand href="/">
         <img
           alt=""
-          src={Logo}
-          width="100"
+          src="./dmv.svg"
+          width="30"
           height="30"
           className="d-inline-block align-top"
         />{' '} Home</Navbar.Brand>

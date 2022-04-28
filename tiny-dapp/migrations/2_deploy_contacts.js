@@ -1,4 +1,4 @@
-const Contacts = artifacts.require("../src/eth/contracts/Service.sol");
+const Contacts = artifacts.require("Service");
 
 
 module.exports = function(deployer) {
