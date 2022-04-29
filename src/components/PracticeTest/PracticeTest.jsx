@@ -17,14 +17,15 @@ export default class PracticeTest extends Component {
 
     alert_message(event) {
 
-        let score = parseInt(event.target.elements.Q1.value) +
-                    parseInt(event.target.elements.Q2.value) +
-                    parseInt(event.target.elements.Q3.value) +
-                    parseInt(event.target.elements.Q4.value) +
-                    parseInt(event.target.elements.Q5.value);
+        event.preventDefault();
+
+        let score = Number(event.target.elements.Q1.value) +
+                    Number(event.target.elements.Q2.value) +
+                    Number(event.target.elements.Q3.value) +
+                    Number(event.target.elements.Q4.value) +
+                    Number(event.target.elements.Q5.value);
 
         alert('Score: ' + score + '/5');
-        event.preventDefault();
     }
 
     render() {
@@ -52,9 +53,9 @@ export default class PracticeTest extends Component {
                                 <b>2</b>. What is the recommended way to hold the steering wheel:
                             </p>
 
-                            <input name='Q2' value={1} type='radio' /> A: 10 o'clock and 2 o'clock
+                            <input name='Q2' value={0} type='radio' /> A: 10 o'clock and 2 o'clock
                             <br></br>
-                            <input name='Q2' value={0} type='radio' /> B: 8 o'clock and 4 o'clock
+                            <input name='Q2' value={1} type='radio' /> B: 8 o'clock and 4 o'clock
                             <br></br>
                             <input name='Q2' value={0} type='radio' /> C: 9 o'clock and 3 o'clock
 
