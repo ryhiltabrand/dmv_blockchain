@@ -10,6 +10,7 @@ contract ServiceInfo {
     uint num_services;
     address payable public customer;
     mapping(uint => Information) public information;
+    mapping(uint => Vital) public vital;
 
     constructor() {
 
@@ -46,41 +47,77 @@ contract ServiceInfo {
 
     struct Information {
         uint Id;
-        string infoHash;
+        string name;
+        string dob;
         string registration;
         string streetAddress;
         string license;
-        string[] vehicles;
+        string vehicles;
         string title;
         address payable person;
     }
 
+    struct Vital {
+        uint Id;
+        string vhash;
+        string birthCertificate;
+        string deathCertificate;
+        string marriageCertificate;
+        string divorceCertificate;
+        address payable person; 
+    }
+
+
+    //
     event InformationAdded(
         uint Id,
-        string infoHash,
+        string name,
+        string dob,
         string registration,
         string streetAddress,
         string license,
-        string[] vehicles,
+        string vehicles,
         string title,
         address payable person
     );
 
-    function uploadInformation(string memory _infoHash, string memory _registration, string memory _streetAddress, string memory _license, string[] memory _vehicles,string memory _title) public{
-        require(bytes(_infoHash).length > 0);
+    event VitalAdded(
+        uint Id,
+        string vhash,
+        string birthCertificate,
+        string deathCertificate,
+        string marriageCertificate,
+        string divorceCertificate,
+        address payable person
+    );
+
+    function uploadInformation(string memory _name, string memory _dob, string memory _registration, string memory _streetAddress, string memory _license, string memory _vehicles,string memory _title) public{
+        require(bytes(_name).length > 0);
+        require(bytes(_dob).length > 0);
         require(bytes(_registration).length > 0);
         require(bytes(_streetAddress).length > 0);
         require(bytes(_license).length > 0);
         require(bytes(_title).length > 0);
         require(msg.sender != address(0));
 
-
+        //string memory _birthCertificat, string memory _deathCertificate, string memory _marriageCertificate, string memory _divorceCertificate
+        //string[2] memory Death = ['QmVUjJsi7cx1a4dAeGZQ6PMtTMjXmMr3TxvdZYbhZTB1sG',''];
         infoCount ++;
-        information[infoCount] = Information(infoCount,_infoHash, _registration,_streetAddress, _license, _vehicles, _title, payable(msg.sender));
+        information[infoCount] = Information(infoCount,_name, _dob, _registration,_streetAddress, _license, _vehicles, _title,payable(msg.sender));
 
-        emit InformationAdded(infoCount,_infoHash, _registration,_streetAddress, _license, _vehicles, _title, payable(msg.sender));
+        emit InformationAdded(infoCount,_name, _dob, _registration,_streetAddress, _license, _vehicles, _title, payable(msg.sender));
     }
+    function uploadVital(string memory _vhash,  string memory _deathCertificate, string memory _marriageCertificate, string memory _divorceCertificate) public{
+        require(bytes(_vhash).length > 0);
 
+        require(msg.sender != address(0));
+
+        //string memory _birthCertificat, string memory _deathCertificate, string memory _marriageCertificate, string memory _divorceCertificate
+        //string[2] memory Death = ['QmVUjJsi7cx1a4dAeGZQ6PMtTMjXmMr3TxvdZYbhZTB1sG',''];
+        vital[infoCount] = Vital(infoCount,_vhash,'QmNWRgSuJD3ggytUXdBQ4eNYq4iXvXHDJZWqJdGmvQ9yeJ', _deathCertificate, _marriageCertificate, _divorceCertificate ,payable(msg.sender));
+
+        emit VitalAdded(infoCount,_vhash,'QmNWRgSuJD3ggytUXdBQ4eNYq4iXvXHDJZWqJdGmvQ9yeJ', _deathCertificate, _marriageCertificate, _divorceCertificate ,payable(msg.sender));
+    }
 
     struct Orders {
 

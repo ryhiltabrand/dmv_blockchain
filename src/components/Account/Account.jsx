@@ -34,7 +34,7 @@ export default class Account extends Component {
         console.log(this.state.account)
     }
 
-    captureFile = event => {
+    captureRegistration = event => {
         event.preventDefault()
         const file = event.target.files[0]
         const reader = new window.FileReader()
@@ -42,23 +42,75 @@ export default class Account extends Component {
         reader.readAsArrayBuffer(file)
         reader.onloadend = () => {
             this.setState({
-                buffer: Buffer(reader.result),
+                rbuffer: Buffer(reader.result),
                 type: file.type,
                 name: file.name
             })
-            console.log('buffer', this.state.buffer)
+            console.log('buffer', this.state.rbuffer)
+        }
+    }
+    captureTitle = event => {
+        event.preventDefault()
+        const file = event.target.files[0]
+        const reader = new window.FileReader()
+
+        reader.readAsArrayBuffer(file)
+        reader.onloadend = () => {
+            this.setState({
+                tbuffer: Buffer(reader.result),
+                type: file.type,
+                name: file.name
+            })
+            console.log('buffer', this.state.tbuffer)
         }
     }
 
-    uploadFile = registration => {
+    uploadFile = (name, dob,sa,vehicle) => {
         console.log("Submitting file to IPFS...")
         console.log(this.state.buffer)
+        let Death = ['QmVUjJsi7cx1a4dAeGZQ6PMtTMjXmMr3TxvdZYbhZTB1sG','']
+        let Marriage = ['QmYHyKpvedFNjF2kqfDr7ThB85KTNM48VX3MfeUjEtHheL','']
+        let Divorce = ['Qmf1mn34MvDHTB2iiM4Ze3vvEiNLUR6fYNxSZynxgJuaqP','']
+        let married
+        let divorced
+        let dead
+        if (0 + Math.random() * (1 - 0) > .5) {
+            married = 0
+        } else {married = 1}
+        if (married==1 && (0 + Math.random() * (1 - 0)) < .3){
+            divorced = 0
+        }else {divorced = 1}
+        if (0 + Math.random() * (1 - 0) < .1) {
+            dead = 0
+        } else {dead = 1}
+
+        let license = Math.random().toString(36).slice(2)
+        var registration
+        var title
+        console.log(Death[dead], Marriage[married], Divorce[divorced])
         // Add file to the IPFS
-        console.log(ipfs)
-        ipfs.add(this.state.buffer).then(result=>{
-            console.log(result)
-        })
-        /*ipfs.add(this.state.buffer, (error, result) => {
+        
+        ipfs.add(this.state.rbuffer).then(result=>{
+            return registration = Object.values(result)[0]
+        }).then(
+            ipfs.add(this.state.tbuffer).then(result=>{
+                 title = Object.values(result)[0]
+                 console.log(registration, title)
+                    this.state.services.methods.uploadInformation(name, dob, registration, sa, license, vehicle, title).send({ from: this.state.account }).on('transactionHash', (hash) => {
+                    this.setState({
+                        loading: false,
+                        type: null,
+                        name: null
+                    })
+                    window.location.reload()
+                }).on('error', (e) => {
+                    window.alert('Error')
+                    this.setState({ loading: false })
+                })
+            })
+        )
+        /* 
+        ipfs.add(this.state.buffer, (error, result) => {
             console.log('IPFS result', result.size)
             if (error) {
                 console.error(error)
@@ -89,32 +141,60 @@ export default class Account extends Component {
 
         return (
             <div>
-                {this.state.account}
                 {this.state.user !== null ? (
                     <button onClick={() => this.user()}>get account</button>
                 ) :
                     (<p>Error</p>)}
                 <div>
+                {this.state.user !== null ? (
+                    <>
+                    {console.log(this.state)}
                     <p>&nbsp;</p>
                     <form onSubmit={(event) => {
                         event.preventDefault()
-                        const registration = this.registration.value
-                        this.uploadFile(registration)
+                        const name = this.name.value;
+                        const dob = this.dob.value;
+                        const sa = this.sa.value;
+                        const vehicle = this.vehicle.value;
+                        this.uploadFile(name, dob, sa, vehicle)
                     }} >
                         <div className="form-group">
                             <br></br>
                             <input
-                                id="fileregistration"
+                                id="infoName"
                                 type="text"
-                                ref={(input) => { this.registration = input }}
+                                ref={(input) => { this.name = input }}
                                 className="form-control text-monospace"
-                                placeholder="registration..."
+                                placeholder="First and Last Name..."
+                                required />
+                            <input
+                                id="infoDOB"
+                                type="text"
+                                ref={(input) => { this.dob = input }}
+                                className="form-control text-monospace"
+                                placeholder="Date of Birth..."
+                                required />
+                            <input
+                                id="infoSA"
+                                type="text"
+                                ref={(input) => { this.sa = input }}
+                                className="form-control text-monospace"
+                                placeholder="Street Address..."
+                                required />
+                            <input
+                                id="infoVehicle"
+                                type="text"
+                                ref={(input) => { this.vehicle = input }}
+                                className="form-control text-monospace"
+                                placeholder="Vehicle..."
                                 required />
                         </div>
-                        <input type="file" onChange={this.captureFile} className="text-white text-monospace" />
+                        
+                        <div>Registration: <input type="file" onChange={this.captureRegistration} className="text-white text-monospace" /></div>
+                        <div>Title: <input type="file" onChange={this.captureTitle} className="text-white text-monospace" /></div>
                         <button type="submit" className="btn-primary btn-block"><b>Upload!</b></button>
                     </form>
-                    <p>&nbsp;</p>
+                    <p>&nbsp;</p></>):(<div></div>)}
                 </div>
             </div>
         )
