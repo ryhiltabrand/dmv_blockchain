@@ -70,6 +70,7 @@ class App extends Component {
       window.ethereum.on('accountsChanged', (accounts) => window.location.reload())
     }
 
+
     const web3 = new Web3(provider)
     this.setState({ web3: web3 })
     const networkId = await web3.eth.net.getId();
@@ -89,7 +90,12 @@ class App extends Component {
     this.setState({ infoCount: infoCount })
     for (var i = 1; i <= infoCount; i++) {
       const info = await serviceContract.methods.information(i).call()
-      this.setState({ info: [...this.state.info, info] })
+      let a = Object.values(info)
+      console.log(this.state.account)
+      console.log(a[a.length-1])
+      
+      if (a[a.length-1] === this.state.account){
+        this.setState({ info: [...this.state.info, info] })}
     }
   }
 
