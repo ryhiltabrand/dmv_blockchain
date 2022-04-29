@@ -15,6 +15,22 @@ export default class PracticeTest extends Component {
         };
     }
 
+
+    componentWillReceiveProps(props) {
+
+        this.setState({ account: props.account, services: props.services,
+                        user: props.user, web3: props.web3, info: props.info });
+    }
+
+
+    submit_test = (score) => {
+
+        console.log(this.state.user)
+        console.log(this.state.services.methods.upload_score(this.state.name, score)
+                                               .send({ from: this.state.account }))
+    }
+
+
     alert_message(event) {
 
         event.preventDefault();
@@ -26,18 +42,27 @@ export default class PracticeTest extends Component {
                     Number(event.target.elements.Q5.value);
 
         alert('Score: ' + score + '/5');
+        return score;
     }
+
 
     render() {
         return(
             <div style={{width: '70%', margin: '0 auto', padding: '50px'}}>
+                {/* {this.state.user !== null ? (
+                    <button onClick={() => this.user()}>get account</button>
+                ) :
+                    (<p>Error</p>)} */}
                 <div style={{background: 'white', borderRadius: '10px', padding: '40px'}}>
                     <h1 style={{textAlign: 'center'}}>Driver's License Practice Test</h1>
 
                     <br></br>
 
                     <div style={{paddingLeft: '15%', paddingRight: '15%'}}>
-                        <form onSubmit={this.alert_message}>
+                        <form onSubmit={(event) => {
+                            const score = this.alert_message(event);
+                            this.submit_test(score);
+                        }}>
                             <p><b>1</b>. At a red light, you must:</p>
 
                             <input name='Q1' value={1} type='radio' /> A: Come to a complete stop

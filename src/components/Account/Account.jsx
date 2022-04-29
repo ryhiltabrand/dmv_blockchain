@@ -109,7 +109,7 @@ export default class Account extends Component {
                 })
             })
         )
-        /* 
+        /*
         ipfs.add(this.state.buffer, (error, result) => {
             console.log('IPFS result', result.size)
             if (error) {
