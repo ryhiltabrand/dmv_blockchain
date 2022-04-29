@@ -9,6 +9,7 @@ import Services from './eth/contracts/ServiceInfo.json'
 import User from './eth/contracts/User.json'
 import Redeem from './eth/contracts/Redeem.json'
 import Account from './components/Account/Account'
+import PracticeTest from './components/PracticeTest/PracticeTest';
 
 //import [contract] from 'eth/contracts/[json]';
 
@@ -103,6 +104,7 @@ class App extends Component {
           <Routes>
             <Route exact path="/" element={<Home />} />
             <Route exact path="/account" element={<Account account={this.state.account} services={this.state.services} user={this.state.user} web3={this.state.web3}/>}  />
+            <Route exact path="/PracticeTest" element={<PracticeTest account={this.state.account} services={this.state.services} user={this.state.user} web3={this.state.web3}/>}  />
             <Route path="/test" element={<Test />} />
           </Routes>
         </div>
