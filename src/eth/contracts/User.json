@@ -557,7 +557,11 @@
   "sourceMap": "58:474:6:-:0;;;171:56;;;;;;;;;;210:10;204:5;;:16;;;;;;;;;;;;;;;;;;58:474;;;;;;",
   "deployedSourceMap": "58:474:6:-:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;438:92;;;:::i;:::-;;;;;;;:::i;:::-;;;;;;;;283:88;;;:::i;:::-;;;;;;;:::i;:::-;;;;;;;;438:92;485:7;510:5;;;;;;;;;;;:13;;;503:20;;438:92;:::o;283:88::-;329:7;359:5;;;;;;;;;;;352:12;;283:88;:::o;7:77:7:-;44:7;73:5;62:16;;7:77;;;:::o;90:118::-;177:24;195:5;177:24;:::i;:::-;172:3;165:37;90:118;;:::o;214:222::-;307:4;345:2;334:9;330:18;322:26;;358:71;426:1;415:9;411:17;402:6;358:71;:::i;:::-;214:222;;;;:::o;442:126::-;479:7;519:42;512:5;508:54;497:65;;442:126;;;:::o;574:96::-;611:7;640:24;658:5;640:24;:::i;:::-;629:35;;574:96;;;:::o;676:118::-;763:24;781:5;763:24;:::i;:::-;758:3;751:37;676:118;;:::o;800:222::-;893:4;931:2;920:9;916:18;908:26;;944:71;1012:1;1001:9;997:17;988:6;944:71;:::i;:::-;800:222;;;;:::o",
   "source": "// SPDX-License-Identifier: MIT\n\npragma solidity ^0.8.9;\n\ncontract User {\n\n   // Private state variable\n    address private owner;\n  \n    // Defining a constructor   \n    constructor() public{   \n        owner=msg.sender;\n    }\n  \n    // Function to get \n    // address of owner\n    function getOwner(\n    ) public view returns (address) {    \n        return owner;\n    }\n  \n    // Function to return \n    // current balance of owner\n    function getBalance(\n    ) public view returns(uint256){\n        return owner.balance;\n    }\n}\n",
+<<<<<<< HEAD
   "sourcePath": "/home/alex/Documents/dmv_blockchain/tiny-dapp/contracts/Users.sol",
+=======
+  "sourcePath": "/Users/ryan/Documents/ODU/CS764/dmv/tiny-dapp/contracts/Users.sol",
+>>>>>>> 8ddc01d00eda50b6a4e02e08f84d2ce864fa95d3
   "ast": {
     "absolutePath": "project:/contracts/Users.sol",
     "exportedSymbols": {
@@ -895,6 +899,7 @@
       }
     ],
     "src": "33:500:6"
+<<<<<<< HEAD
   },
   "legacyAST": {
     "absolutePath": "project:/contracts/Users.sol",
@@ -1233,6 +1238,8 @@
       }
     ],
     "src": "33:500:6"
+=======
+>>>>>>> 8ddc01d00eda50b6a4e02e08f84d2ce864fa95d3
   },
   "compiler": {
     "name": "solc",
@@ -1242,12 +1249,21 @@
     "5777": {
       "events": {},
       "links": {},
+<<<<<<< HEAD
       "address": "0xA758C0Cc4a94Db2AB7BA56CC3d5821D4ea13ba47",
       "transactionHash": "0xbed1655eb02610357c32dc48e2d174075a4286324f132246dd00d537022d3e27"
     }
   },
   "schemaVersion": "3.4.6",
   "updatedAt": "2022-04-29T16:03:05.780Z",
+=======
+      "address": "0x9f9ac5D0A3C258C1B6816DB8F9D5c9a4f73e29c8",
+      "transactionHash": "0xbbb17729d5d2dc54768838feeb40ee4cec98ef537d27131faabd16948f408f45"
+    }
+  },
+  "schemaVersion": "3.4.7",
+  "updatedAt": "2022-04-29T18:55:13.008Z",
+>>>>>>> 8ddc01d00eda50b6a4e02e08f84d2ce864fa95d3
   "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",

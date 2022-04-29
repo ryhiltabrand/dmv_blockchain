@@ -904,7 +904,11 @@
   "sourceMap": "1702:258:3:-:0;;;;;;;;;;;;;;;;;;;",
   "deployedSourceMap": "1702:258:3:-:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1917:40;;;;;;;;;;;;;:::i;:::-;;:::i;:::-;;;;;;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::o;88:117:7:-;197:1;194;187:12;334:126;371:7;411:42;404:5;400:54;389:65;;334:126;;;:::o;466:96::-;503:7;532:24;550:5;532:24;:::i;:::-;521:35;;466:96;;;:::o;568:122::-;641:24;659:5;641:24;:::i;:::-;634:5;631:35;621:63;;680:1;677;670:12;621:63;568:122;:::o;696:139::-;742:5;780:6;767:20;758:29;;796:33;823:5;796:33;:::i;:::-;696:139;;;;:::o;841:329::-;900:6;949:2;937:9;928:7;924:23;920:32;917:119;;;955:79;;:::i;:::-;917:119;1075:1;1100:53;1145:7;1136:6;1125:9;1121:22;1100:53;:::i;:::-;1090:63;;1046:117;841:329;;;;:::o;1176:77::-;1213:7;1242:5;1231:16;;1176:77;;;:::o;1259:118::-;1346:24;1364:5;1346:24;:::i;:::-;1341:3;1334:37;1259:118;;:::o;1383:332::-;1504:4;1542:2;1531:9;1527:18;1519:26;;1555:71;1623:1;1612:9;1608:17;1599:6;1555:71;:::i;:::-;1636:72;1704:2;1693:9;1689:18;1680:6;1636:72;:::i;:::-;1383:332;;;;;:::o",
   "source": "// SPDX-License-Identifier: MIT\n\npragma solidity ^0.8.9;\n\ncontract Redeem {\n\n    address public customer;\n\n    struct NumOrders {\n\n        uint service_order_count;\n    }\n\n    mapping(address => NumOrders) public redeemable_orders;\n    mapping(address => NumOrders) public redeemed_to_date;\n    mapping(address => NumOrders) public purchased_to_date;\n\n    // Allows us to know if the service contract was connected\n    bool contract_connected = false;\n    ExternalServices service_contract;\n\n    function connect_service_contract(address _address) public {\n\n        service_contract = ExternalServices(_address);\n        contract_connected = true;\n\n        determine_redeemable();\n    }\n\n\n    // May want to change to public later\n    function determine_redeemable() private {\n\n        require(\n            contract_connected,\n            \"Error: The service contract must be connected first\"\n        );\n\n        customer = msg.sender;\n\n        uint256 _temp;\n        (_temp, redeemed_to_date[customer].service_order_count) = read_orders();\n\n        redeemable_orders[customer].service_order_count = purchased_to_date[customer].service_order_count - redeemed_to_date[customer].service_order_count;\n    }\n\n\n    function redeem_order() public {\n\n        customer = msg.sender;\n\n        determine_redeemable();\n        redeemable_orders[customer].service_order_count++;\n        determine_redeemable();\n    }\n\n\n    function read_orders() private returns (uint256 wallet, uint count) {\n\n        require(\n            contract_connected,\n            \"Error: The service contract must be connected first\"\n        );\n\n        customer = msg.sender;\n        return (service_contract.orders(customer));\n    }\n}\n\n\ncontract ExternalServices {\n\n    // Same as in services.sol; allows us to link files\n    // Used to track msg.sender's balance\n    struct Orders {\n\n        uint256 wallet_bal;\n        uint service_count;\n    }\n\n    mapping(address => Orders) public orders;\n}\n",
+<<<<<<< HEAD
   "sourcePath": "/home/alex/Documents/dmv_blockchain/tiny-dapp/contracts/Redeem.sol",
+=======
+  "sourcePath": "/Users/ryan/Documents/ODU/CS764/dmv/tiny-dapp/contracts/Redeem.sol",
+>>>>>>> 8ddc01d00eda50b6a4e02e08f84d2ce864fa95d3
   "ast": {
     "absolutePath": "project:/contracts/Redeem.sol",
     "exportedSymbols": {
@@ -2687,6 +2691,7 @@
       }
     ],
     "src": "33:1928:3"
+<<<<<<< HEAD
   },
   "legacyAST": {
     "absolutePath": "project:/contracts/Redeem.sol",
@@ -4470,14 +4475,21 @@
       }
     ],
     "src": "33:1928:3"
+=======
+>>>>>>> 8ddc01d00eda50b6a4e02e08f84d2ce864fa95d3
   },
   "compiler": {
     "name": "solc",
     "version": "0.8.9+commit.e5eed63a.Emscripten.clang"
   },
   "networks": {},
+<<<<<<< HEAD
   "schemaVersion": "3.4.6",
   "updatedAt": "2022-04-29T15:52:38.149Z",
+=======
+  "schemaVersion": "3.4.7",
+  "updatedAt": "2022-04-29T18:53:24.309Z",
+>>>>>>> 8ddc01d00eda50b6a4e02e08f84d2ce864fa95d3
   "devdoc": {
     "kind": "dev",
     "methods": {},
