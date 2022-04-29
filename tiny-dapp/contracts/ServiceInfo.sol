@@ -100,8 +100,6 @@ contract ServiceInfo {
         require(bytes(_title).length > 0);
         require(msg.sender != address(0));
 
-        //string memory _birthCertificat, string memory _deathCertificate, string memory _marriageCertificate, string memory _divorceCertificate
-        //string[2] memory Death = ['QmVUjJsi7cx1a4dAeGZQ6PMtTMjXmMr3TxvdZYbhZTB1sG',''];
         infoCount ++;
         information[infoCount] = Information(infoCount,_name, _dob, _registration,_streetAddress, _license, _vehicles, _title,payable(msg.sender));
 
@@ -112,8 +110,6 @@ contract ServiceInfo {
 
         require(msg.sender != address(0));
 
-        //string memory _birthCertificat, string memory _deathCertificate, string memory _marriageCertificate, string memory _divorceCertificate
-        //string[2] memory Death = ['QmVUjJsi7cx1a4dAeGZQ6PMtTMjXmMr3TxvdZYbhZTB1sG',''];
         vital[infoCount] = Vital(infoCount,_vhash,'QmNWRgSuJD3ggytUXdBQ4eNYq4iXvXHDJZWqJdGmvQ9yeJ', _deathCertificate, _marriageCertificate, _divorceCertificate ,payable(msg.sender));
 
         emit VitalAdded(infoCount,_vhash,'QmNWRgSuJD3ggytUXdBQ4eNYq4iXvXHDJZWqJdGmvQ9yeJ', _deathCertificate, _marriageCertificate, _divorceCertificate ,payable(msg.sender));

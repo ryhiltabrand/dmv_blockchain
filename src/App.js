@@ -23,15 +23,15 @@ function Test() {
 
 function Home() {
   return (
-    <div style={{width: '50%', height: '50%', margin: '0 auto', textAlign: 'center', padding: '250px'}}>
-      <div style={{background: 'white', borderRadius: '10px', padding: '10px'}}>
+    <div style={{ width: '50%', height: '50%', margin: '0 auto', textAlign: 'center', padding: '250px' }}>
+      <div style={{ background: 'white', borderRadius: '10px', padding: '10px' }}>
         <h1>Welcome to the DMV!</h1>
         <p>
           Ensure the <a href={'https://trufflesuite.com/ganache/'} target={'_blank'}>Ganache</a> server is running
           <br></br>
           and
           <br></br>
-           it has been connected to <a href={'https://metamask.io/'} target={'_blank'}>Metamask</a>
+          it has been connected to <a href={'https://metamask.io/'} target={'_blank'}>Metamask</a>
         </p>
       </div>
     </div>
@@ -49,7 +49,7 @@ class App extends Component {
       user: null,
       redeem: null,
       web3: null,
-      info: null
+      info: []
     };
   }
 
@@ -70,25 +70,25 @@ class App extends Component {
     }
 
     const web3 = new Web3(provider)
-    this.setState({web3: web3})
+    this.setState({ web3: web3 })
     const networkId = await web3.eth.net.getId();
 
     let serviceContract
     let userContract
     let redeemContract
     serviceContract = new web3.eth.Contract(Services.abi, Services.networks[networkId].address)
-    this.setState({services:serviceContract})
+    this.setState({ services: serviceContract })
     userContract = new web3.eth.Contract(User.abi, User.networks[networkId].address)
-    this.setState({user:userContract})
+    this.setState({ user: userContract })
     redeemContract = new web3.eth.Contract(Redeem.abi, Redeem.networks[networkId].address)
-    this.setState({redeem:redeemContract})
+    this.setState({ redeem: redeemContract })
 
-    const infoCount = await serviceContract.methods.infoCount.call()
-    console.log(infoCount)
-    this.setState({infoCount: infoCount})
-    for (var i = infoCount; i>=1; i--){
+    const infoCount = await serviceContract.methods.infoCount().call()
+    //console.log(infoCount)
+    this.setState({ infoCount: infoCount })
+    for (var i = 1; i <= infoCount; i++) {
       const info = await serviceContract.methods.information(i).call()
-      this.setState({info : [...this.state.info, info]})
+      this.setState({ info: [...this.state.info, info] })
     }
   }
 
@@ -97,12 +97,12 @@ class App extends Component {
 
     return (
       <div>
-        {console.log(this.state)}
+
         <div>
           <OurNavbar />
           <Routes>
             <Route exact path="/" element={<Home />} />
-            <Route exact path="/account" element={<Account account={this.state.account} services={this.state.services} user={this.state.user} web3={this.state.web3}/>}  />
+            <Route exact path="/account" element={<Account account={this.state.account} services={this.state.services} user={this.state.user} web3={this.state.web3} info={this.state.info} />} />
             <Route path="/test" element={<Test />} />
           </Routes>
         </div>
