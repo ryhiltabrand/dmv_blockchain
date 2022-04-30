@@ -1,5 +1,12 @@
 import React, { Component } from "react";
 
+const ipfsClient = require("ipfs-http-client");
+const ipfs = ipfsClient.create({
+  host: "ipfs.infura.io",
+  port: 5001,
+  protocol: "https",
+});
+
 export default class PracticeTest extends Component {
 
     constructor(props) {
@@ -8,6 +15,7 @@ export default class PracticeTest extends Component {
         this.state = {
             account: this.props.account,
             services: this.props.services,
+            practice_test: this.props.practice_test,
             user: this.props.user,
             web3: this.props.web3,
             info: [],
@@ -18,16 +26,24 @@ export default class PracticeTest extends Component {
 
     componentWillReceiveProps(props) {
 
-        this.setState({ account: props.account, services: props.services,
-                        user: props.user, web3: props.web3, info: props.info });
+        this.setState({
+            account: props.account,
+            services: props.services,
+            user: props.user,
+            web3: props.web3,
+            info: props.info,
+            practice_test: props.practice_test
+        });
     }
 
 
     submit_test = (score) => {
 
         console.log(this.state.user)
-        console.log(this.state.services.methods.upload_score(this.state.name, score)
-                                               .send({ from: this.state.account }))
+        console.log(
+            this.state.practice_test.methods.upload_score(this.state.account, score)
+                                            .send({ from: this.state.account })
+        );
     }
 
 
@@ -49,10 +65,6 @@ export default class PracticeTest extends Component {
     render() {
         return(
             <div style={{width: '70%', margin: '0 auto', padding: '50px'}}>
-                {/* {this.state.user !== null ? (
-                    <button onClick={() => this.user()}>get account</button>
-                ) :
-                    (<p>Error</p>)} */}
                 <div style={{background: 'white', borderRadius: '10px', padding: '40px'}}>
                     <h1 style={{textAlign: 'center'}}>Driver's License Practice Test</h1>
 

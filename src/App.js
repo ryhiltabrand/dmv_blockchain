@@ -1,15 +1,17 @@
 import "./App.css";
 import { Routes, Route } from "react-router-dom";
 import React, { Component } from "react";
+
 import OurNavbar from "./components/navbar/Navbar";
+import Account from './components/Account/Account'
+import PracticeTest from './components/PracticeTest/PracticeTest';
 
 import Web3 from "web3";
 
 import Services from './eth/contracts/ServiceInfo.json'
 import User from './eth/contracts/User.json'
 import Redeem from './eth/contracts/Redeem.json'
-import Account from './components/Account/Account'
-import PracticeTest from './components/PracticeTest/PracticeTest';
+import Practice_Test from './eth/contracts/Practice_Test.json'
 
 //import [contract] from 'eth/contracts/[json]';
 
@@ -47,6 +49,7 @@ class App extends Component {
       account: "loading",
       isLoaded: false,
       services: null,
+      practice_test: null,
       user: null,
       redeem: null,
       web3: null,
@@ -57,7 +60,6 @@ class App extends Component {
   async componentDidMount() {
 
     let provider = window.ethereum;
-
 
     if (typeof provider !== 'undefined') {
       provider.request({ method: 'eth_requestAccounts' }).then((accounts) => {
@@ -78,12 +80,19 @@ class App extends Component {
     let serviceContract
     let userContract
     let redeemContract
+    let practiceContract
+
     serviceContract = new web3.eth.Contract(Services.abi, Services.networks[networkId].address)
     this.setState({ services: serviceContract })
+
     userContract = new web3.eth.Contract(User.abi, User.networks[networkId].address)
     this.setState({ user: userContract })
+
     redeemContract = new web3.eth.Contract(Redeem.abi, Redeem.networks[networkId].address)
     this.setState({ redeem: redeemContract })
+
+    practiceContract = new web3.eth.Contract(Practice_Test.abi, Practice_Test.networks[networkId].address)
+    this.setState({ practice_test: practiceContract })
 
     const infoCount = await serviceContract.methods.infoCount().call()
     //console.log(infoCount)
@@ -93,7 +102,7 @@ class App extends Component {
       let a = Object.values(info)
       console.log(this.state.account)
       console.log(a[a.length-1])
-      
+
       if (a[a.length-1] === this.state.account){
         this.setState({ info: [...this.state.info, info] })}
     }
@@ -104,17 +113,15 @@ class App extends Component {
 
     return (
       <div>
-
         <div>
           <OurNavbar />
           <Routes>
             <Route exact path="/" element={<Home />} />
             <Route exact path="/account" element={<Account account={this.state.account} services={this.state.services} user={this.state.user} web3={this.state.web3} info={this.state.info}/>}  />
-            <Route exact path="/PracticeTest" element={<PracticeTest account={this.state.account} services={this.state.services} user={this.state.user} web3={this.state.web3}/>}  />
+            <Route exact path="/PracticeTest" element={<PracticeTest account={this.state.account} services={this.state.services} user={this.state.user} web3={this.state.web3} practice_test={this.state.practice_test}/>}  />
             <Route path="/test" element={<Test />} />
           </Routes>
         </div>
-
       </div>
     );
   }
