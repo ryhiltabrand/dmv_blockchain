@@ -17,6 +17,7 @@ import User from './eth/contracts/User.json'
 import Redeem from './eth/contracts/Redeem.json'
 import Practice_Test from './eth/contracts/Practice_Test.json'
 import VehicleServices from './eth/contracts/VehicleServices.json'
+import RegistrationServices from './eth/contracts/registrationService.json'
 
 //import [contract] from 'eth/contracts/[json]';
 
@@ -33,6 +34,7 @@ class App extends Component {
       redeem: null,
       web3: null,
       vehicle: null,
+      registration: null,
       info: []
     };
   }
@@ -62,7 +64,7 @@ class App extends Component {
     let redeemContract
     let practiceContract
     let vehicleServicesContract
-
+    let regService
     serviceContract = new web3.eth.Contract(Services.abi, Services.networks[networkId].address)
     this.setState({ services: serviceContract })
 
@@ -77,6 +79,9 @@ class App extends Component {
 
     vehicleServicesContract = new web3.eth.Contract(VehicleServices.abi, VehicleServices.networks[networkId].address)
     this.setState({ vehicle: vehicleServicesContract })
+
+    regService = new web3.eth.Contract(RegistrationServices.abi, RegistrationServices.networks[networkId].address)
+    this.setState({ registration: regService })
 
     const infoCount = await serviceContract.methods.infoCount().call()
     //console.log(infoCount)
@@ -105,7 +110,7 @@ class App extends Component {
             <Route exact path="/PracticeTest" element={<PracticeTest account={this.state.account} user={this.state.user} web3={this.state.web3} practice_test={this.state.practice_test}/>}  />
             <Route path="/onlineServices" element={<Test />} />
             <Route path="/idServices" element={<Test />} />
-            <Route path="/vehicleServices" element={<VehicleS account={this.state.account} web3={this.state.web3} vehicle={this.state.vehicle}/>} />
+            <Route path="/vehicleServices" element={<VehicleS account={this.state.account} web3={this.state.web3} vehicle={this.state.vehicle} registration={this.state.registration}/>} />
             <Route path="/test" element={<Test />} />
           </Routes>
         </div>

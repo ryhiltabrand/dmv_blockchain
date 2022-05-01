@@ -25,9 +25,11 @@ export default class VehicleS extends Component {
             account: this.props.account,
             web3: this.props.web3,
             vehicle: this.props.vehicle,
+            reg: this.props.registration,
             loading: false,
 
             v: null,
+            r: null,
         };
     }
 
@@ -36,6 +38,7 @@ export default class VehicleS extends Component {
             account: props.account,
             web3: props.web3,
             vehicle: props.vehicle,
+            reg: props.registration,
             loading: true
         });
     }
@@ -85,7 +88,7 @@ export default class VehicleS extends Component {
     }
 
     RegisterCar = (vin) => {
-        this.state.vehicle.methods.RegisterVehicle(vin, '2022').send({ from: this.state.account }).on("transactionHash", (hash) => {
+        this.state.reg.methods.registerCar(vin, '2022').send({ from: this.state.account }).on("transactionHash", (hash) => {
             this.setState({
                 loading: false,
             });
@@ -94,6 +97,16 @@ export default class VehicleS extends Component {
             window.alert("Error");
             this.setState({ loading: false })
         })
+    }
+
+    async viewReg(vin) {
+        console.log(Web3.utils.asciiToHex(vin))
+        const reg = this.state.reg.methods.getRegistration(Web3.utils.asciiToHex(vin)).call().then((results => {
+            this.setState({ r: Object.values(results) })
+        }))
+
+        //const vehicle  = await this.state.methods.vehicleMap(Web3.utils.asciiToHex(vin).call())
+
     }
 
 
@@ -156,6 +169,7 @@ export default class VehicleS extends Component {
                                                 event.preventDefault();
                                                 const vin = this.vin.value;
                                                 this.viewCar(vin)
+                                                this.viewReg(vin)
                                                 //this.uploadFile(name, dob, sa, vehicle);
                                             }}
                                         >
@@ -181,7 +195,7 @@ export default class VehicleS extends Component {
                                         </form>
                                         <p>&nbsp;</p>
 
-                                        {this.state.v !== null ? (
+                                        {this.state.v !== null && this.state.r !== null ? (
                                             <div>
                                                 <div></div>
                                                 <thead style={{ fontSize: "12px" }} >
@@ -190,31 +204,35 @@ export default class VehicleS extends Component {
                                                         <td>{this.state.v[0]}</td>
                                                     </tr>
                                                     <tr>
+                                                        <th>Owner</th>
+                                                        <td>{this.state.v[1]}</td>
+                                                    </tr>
+                                                    <tr>
                                                         <th>Vin</th>
-                                                        <td>{Web3.utils.hexToAscii(this.state.v[1]).substring(0, 16)}</td>
+                                                        <td>{Web3.utils.hexToAscii(this.state.v[2]).substring(0, 16)}</td>
                                                     </tr>
                                                     <tr>
                                                         <th>Car Year</th>
-                                                        <td>{this.state.v[2]}</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th>Make</th>
                                                         <td>{this.state.v[3]}</td>
                                                     </tr>
                                                     <tr>
-                                                        <th>Model</th>
+                                                        <th>Make</th>
                                                         <td>{this.state.v[4]}</td>
                                                     </tr>
                                                     <tr>
-                                                        <th>Registration Year</th>
+                                                        <th>Model</th>
                                                         <td>{this.state.v[5]}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>Registration Year</th>
+                                                        <td>{this.state.r[2]}</td>
                                                     </tr>
 
                                                 </thead>
-                                                {this.state.v[4] !== "2021" ? (
+                                                {this.state.r[2] !== "2022" ? (
                                                     <div>
                                                         <div style={{color: "red"}}>REGISTRATION EXPIRED</div>
-                                                        <Button variant="warning" onClick={() =>this.RegisterCar(this.state.v[0])}>Register Car</Button>
+                                                        <Button variant="warning" onClick={() =>this.RegisterCar(this.state.v[2])}>Register Car</Button>
                                                     </div>
                                                 ): (
                                                     <div />
@@ -290,6 +308,7 @@ export default class VehicleS extends Component {
                                                 const make = this.make.value;
                                                 const model = this.model.value;
                                                 this.titleCar(vin, year, make, model)
+                                                
                                                 //this.uploadFile(name, dob, sa, vehicle);
 
                                             }}

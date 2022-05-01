@@ -42,6 +42,7 @@ contract VehicleServices is Ownable {
         int8 registrationStatus; //0 not registered, 1 registered...
         string registrationYear;
         int8 status; //  0 not exist, 1 created, 2 transferred...
+        address vowner;
     }
 
     function TitleVehicle(
@@ -61,8 +62,18 @@ contract VehicleServices is Ownable {
             _vonwer,
             0,
             "0000",
-            1
+            1,
+            msg.sender
         );
+    }
+
+    modifier maponlyOwner(bytes32 _vin) {
+        require(mapisOwner(_vin), "Function accessible only by the owner !!");
+        _;
+    }
+
+    function mapisOwner(bytes32 _vin) public view returns (bool) {
+        return msg.sender == vehicleMap[_vin].vowner;
     }
 
     function stringsEquals(string memory s1, string memory s2)
@@ -82,15 +93,15 @@ contract VehicleServices is Ownable {
 
     function RegisterVehicle(bytes32 _vin, string memory _regYear)
         public
-        onlyOwner
+        maponlyOwner(_vin)
     {
         //require(isVehicle(_vin));
-        Vehicle storage vehicle = vehicleMap[_vin];
+        //Vehicle storage vehicle = vehicleMap[_vin];
         string memory curr = vehicleMap[_vin].registrationYear;
         //require(!isVehicle(_vin));
         if (stringsEquals(curr, _regYear)) {
-            vehicle.registrationYear = _regYear;
-            vehicle.registrationStatus = 1;
+            vehicleMap[_vin].registrationYear = _regYear;
+            vehicleMap[_vin].registrationStatus = 1;
         }
     }
 
@@ -121,6 +132,7 @@ contract VehicleServices is Ownable {
         view
         returns (
             address,
+            address,
             bytes32,
             string memory,
             string memory,
@@ -134,6 +146,7 @@ contract VehicleServices is Ownable {
         //return (u.vin, u.vehicleOwner, u.year, u.make, u.model, u.registrationStatus, u.registrationYear);
         return (
             rowner(),
+            vehicleMap[_vin].vowner,
             vehicleMap[_vin].vin,
             vehicleMap[_vin].year,
             vehicleMap[_vin].make,
@@ -144,6 +157,26 @@ contract VehicleServices is Ownable {
     }
 }
 
+contract registrationService is VehicleServices {
+    
+    mapping(bytes32 => Registration) registrationeMap;
+
+    struct Registration {
+        bytes32 vin;
+        address vowner;
+        string year;
+    }
+
+    function registerCar(bytes32 _vin, string memory _year) public {
+        registrationeMap[_vin]=Registration(_vin, msg.sender,_year);
+    }
+
+    function getRegistration(bytes32 _vin) public view returns(bytes32, address, string memory){
+        return(
+            registrationeMap[_vin].vin, registrationeMap[_vin].vowner, registrationeMap[_vin].year
+        );
+    }
+}
 /*contract VehicleServices {
     address private owner;
     bytes32[] vins;
