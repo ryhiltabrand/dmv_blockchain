@@ -241,7 +241,7 @@ export default class Account extends Component {
                   <input
                     type="file"
                     onChange={this.captureRegistration}
-                    className="text-white text-monospace"
+                    className="text-monospace"
                   />
                 </div>
                 <div>
@@ -249,7 +249,7 @@ export default class Account extends Component {
                   <input
                     type="file"
                     onChange={this.captureTitle}
-                    className="text-white text-monospace"
+                    className="text-monospace"
                   />
                 </div>
                 <button type="submit" className="btn-primary btn-block">

@@ -2,39 +2,37 @@
 
 pragma solidity ^0.8.9;
 
-contract Practice_Test {
+contract WebService {
 
     address payable public customer;
     uint public index = 0;
 
-    struct Submission {
+    struct Service {
 
         uint id;
         string account;
-        uint score;
         address payable wallet;
     }
 
 
-    event NewSubmission(
+    event ViewVital(
 
         uint id,
         string account,
-        uint score,
         address payable wallet
     );
 
-    mapping(uint => Submission) public submission;
+    mapping(uint => Service) public service;
 
 
-    function upload_score(string memory _account, uint _score) public payable {
+    function view_vital(string memory _account) public payable {
 
         customer = payable(msg.sender);
 
         index++;
 
-        submission[index] = Submission(index, _account, _score, customer);
-        emit NewSubmission(index, _account, _score, customer);
+        service[index] = Service(index, _account, customer);
+        emit ViewVital(index, _account, customer);
 
         customer.transfer(msg.value);
     }

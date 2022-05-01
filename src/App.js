@@ -7,6 +7,7 @@ import OurNavbar from "./components/navbar/Navbar";
 import Account from './components/Account/Account'
 import PracticeTest from './components/PracticeTest/PracticeTest';
 import VehicleS from "./components/Vehicle/vehicle";
+import OnlineServices from "./components/OnlineServices/OnlineServices";
 
 //dap import
 import Web3 from "web3";
@@ -17,6 +18,7 @@ import User from './eth/contracts/User.json'
 import Redeem from './eth/contracts/Redeem.json'
 import Practice_Test from './eth/contracts/Practice_Test.json'
 import VehicleServices from './eth/contracts/VehicleServices.json'
+import WebServices from './eth/contracts/WebService.json'
 
 //import [contract] from 'eth/contracts/[json]';
 
@@ -62,6 +64,7 @@ class App extends Component {
     let redeemContract
     let practiceContract
     let vehicleServicesContract
+    let webServiceContract
 
     serviceContract = new web3.eth.Contract(Services.abi, Services.networks[networkId].address)
     this.setState({ services: serviceContract })
@@ -77,6 +80,9 @@ class App extends Component {
 
     vehicleServicesContract = new web3.eth.Contract(VehicleServices.abi, VehicleServices.networks[networkId].address)
     this.setState({ vehicle: vehicleServicesContract })
+
+    webServiceContract = new web3.eth.Contract(WebServices.abi, WebServices.networks[networkId].address)
+    this.setState({ web_service: webServiceContract })
 
     const infoCount = await serviceContract.methods.infoCount().call()
     //console.log(infoCount)
@@ -103,8 +109,7 @@ class App extends Component {
             <Route exact path="/" element={<Home />} />
             <Route exact path="/account" element={<Account account={this.state.account} services={this.state.services} user={this.state.user} web3={this.state.web3} info={this.state.info}/>}  />
             <Route exact path="/PracticeTest" element={<PracticeTest account={this.state.account} user={this.state.user} web3={this.state.web3} practice_test={this.state.practice_test}/>}  />
-            <Route path="/onlineServices" element={<Test />} />
-            <Route path="/idServices" element={<Test />} />
+            <Route path="/onlineServices" element={<OnlineServices account={this.state.account} web3={this.state.web3} web_service={this.web_service} />} />
             <Route path="/vehicleServices" element={<VehicleS account={this.state.account} web3={this.state.web3} vehicle={this.state.vehicle}/>} />
             <Route path="/test" element={<Test />} />
           </Routes>

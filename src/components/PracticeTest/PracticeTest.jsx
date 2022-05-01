@@ -1,12 +1,5 @@
 import React, { Component } from "react";
 
-const ipfsClient = require("ipfs-http-client");
-const ipfs = ipfsClient.create({
-  host: "ipfs.infura.io",
-  port: 5001,
-  protocol: "https",
-});
-
 export default class PracticeTest extends Component {
 
     constructor(props) {
@@ -40,7 +33,11 @@ export default class PracticeTest extends Component {
         console.log(this.state.user)
         console.log(
             this.state.practice_test.methods.upload_score(this.state.account, score)
-                                            .send({ from: this.state.account })
+                                            .send({
+                                                from: this.state.account,
+                                                gas: '200000',
+                                                value: this.state.web3.utils.toWei('0.01', 'ether')
+                                            })
         );
     }
 
