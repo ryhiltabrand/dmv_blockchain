@@ -36,7 +36,7 @@ contract Practice_Test {
     mapping(uint => Submission) public submission;
 
 
-    function upload_score(string memory _account, uint _score) public {
+    function upload_score(string memory _account, uint _score) public payable {
 
         require(msg.sender != address(0));
 

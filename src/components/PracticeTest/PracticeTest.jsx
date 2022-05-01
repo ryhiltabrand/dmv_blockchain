@@ -14,7 +14,6 @@ export default class PracticeTest extends Component {
 
         this.state = {
             account: this.props.account,
-            services: this.props.services,
             practice_test: this.props.practice_test,
             user: this.props.user,
             web3: this.props.web3,
@@ -28,7 +27,6 @@ export default class PracticeTest extends Component {
 
         this.setState({
             account: props.account,
-            services: props.services,
             user: props.user,
             web3: props.web3,
             info: props.info,

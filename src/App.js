@@ -102,7 +102,7 @@ class App extends Component {
           <Routes>
             <Route exact path="/" element={<Home />} />
             <Route exact path="/account" element={<Account account={this.state.account} services={this.state.services} user={this.state.user} web3={this.state.web3} info={this.state.info}/>}  />
-            <Route exact path="/PracticeTest" element={<PracticeTest account={this.state.account} services={this.state.services} user={this.state.user} web3={this.state.web3} practice_test={this.state.practice_test}/>}  />
+            <Route exact path="/PracticeTest" element={<PracticeTest account={this.state.account} user={this.state.user} web3={this.state.web3} practice_test={this.state.practice_test}/>}  />
             <Route path="/onlineServices" element={<Test />} />
             <Route path="/idServices" element={<Test />} />
             <Route path="/vehicleServices" element={<VehicleS account={this.state.account} web3={this.state.web3} vehicle={this.state.vehicle}/>} />
