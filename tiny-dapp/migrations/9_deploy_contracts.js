@@ -1,5 +1,4 @@
-var contract = artifacts.require("registrationService")
-
+var contract = artifacts.require("WebService")
 
 module.exports = function(deployer) {
   deployer.deploy(contract);

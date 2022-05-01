@@ -19,6 +19,7 @@ import Redeem from './eth/contracts/Redeem.json'
 import Practice_Test from './eth/contracts/Practice_Test.json'
 import VehicleServices from './eth/contracts/VehicleServices.json'
 import WebServices from './eth/contracts/WebService.json'
+import RegistrationServices from './eth/contracts/registrationService.json'
 
 //import [contract] from 'eth/contracts/[json]';
 
@@ -35,6 +36,7 @@ class App extends Component {
       redeem: null,
       web3: null,
       vehicle: null,
+      registration: null,
       info: []
     };
   }
@@ -65,7 +67,8 @@ class App extends Component {
     let practiceContract
     let vehicleServicesContract
     let webServiceContract
-
+    let regService
+    
     serviceContract = new web3.eth.Contract(Services.abi, Services.networks[networkId].address)
     this.setState({ services: serviceContract })
 
@@ -83,6 +86,9 @@ class App extends Component {
 
     webServiceContract = new web3.eth.Contract(WebServices.abi, WebServices.networks[networkId].address)
     this.setState({ web_service: webServiceContract })
+
+    regService = new web3.eth.Contract(RegistrationServices.abi, RegistrationServices.networks[networkId].address)
+    this.setState({ registration: regService })
 
     const infoCount = await serviceContract.methods.infoCount().call()
     //console.log(infoCount)
