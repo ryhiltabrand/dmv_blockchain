@@ -76,7 +76,7 @@ class App extends Component {
     this.setState({ practice_test: practiceContract })
 
     vehicleServicesContract = new web3.eth.Contract(VehicleServices.abi, VehicleServices.networks[networkId].address)
-    this.setState({ practice_test: vehicleServicesContract })
+    this.setState({ vehicle: vehicleServicesContract })
 
     const infoCount = await serviceContract.methods.infoCount().call()
     //console.log(infoCount)
