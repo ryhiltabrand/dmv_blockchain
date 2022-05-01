@@ -20,8 +20,11 @@ const OurNavbar = () => {
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">
             <Nav.Link href="/account">Account</Nav.Link>
-            <Nav.Link href="/test">Test</Nav.Link>
-            <NavDropdown title="Dropdown" id="basic-nav-dropdown">
+            <Nav.Link href="/PracticeTest">Practic Test</Nav.Link>
+            <Nav.Link href="/onlineServices">Online Services</Nav.Link>
+            <Nav.Link href="/idServices">ID Services</Nav.Link>
+            <Nav.Link href="/vehicleServices">Vehicle Services</Nav.Link>
+            {/*<NavDropdown title="Dropdown" id="basic-nav-dropdown">
               <NavDropdown.Item href="/PracticeTest">Practice Test</NavDropdown.Item>
               <NavDropdown.Item href="#action/3.2">
                 Another action
@@ -31,7 +34,7 @@ const OurNavbar = () => {
               <NavDropdown.Item href="#action/3.4">
                 Separated link
               </NavDropdown.Item>
-            </NavDropdown>
+            </NavDropdown>*/}
           </Nav>
         </Navbar.Collapse>
       </Container>

@@ -2,44 +2,23 @@ import "./App.css";
 import { Routes, Route } from "react-router-dom";
 import React, { Component } from "react";
 
+//components import
 import OurNavbar from "./components/navbar/Navbar";
 import Account from './components/Account/Account'
 import PracticeTest from './components/PracticeTest/PracticeTest';
+import VehicleS from "./components/Vehicle/vehicle";
 
+//dap import
 import Web3 from "web3";
 
+//contracts
 import Services from './eth/contracts/ServiceInfo.json'
 import User from './eth/contracts/User.json'
 import Redeem from './eth/contracts/Redeem.json'
 import Practice_Test from './eth/contracts/Practice_Test.json'
+import VehicleServices from './eth/contracts/VehicleServices.json'
 
 //import [contract] from 'eth/contracts/[json]';
-
-
-function Test() {
-  return (
-    <div>
-      Hi
-    </div>
-  )
-}
-
-function Home() {
-  return (
-    <div style={{ width: '50%', height: '50%', margin: '0 auto', textAlign: 'center', padding: '250px' }}>
-      <div style={{ background: 'white', borderRadius: '10px', padding: '10px' }}>
-        <h1>Welcome to the DMV!</h1>
-        <p>
-          Ensure the <a href={'https://trufflesuite.com/ganache/'} target={'_blank'}>Ganache</a> server is running
-          <br></br>
-          and
-          <br></br>
-          it has been connected to <a href={'https://metamask.io/'} target={'_blank'}>Metamask</a>
-        </p>
-      </div>
-    </div>
-  )
-}
 
 class App extends Component {
   constructor(props) {
@@ -53,6 +32,7 @@ class App extends Component {
       user: null,
       redeem: null,
       web3: null,
+      vehicle: null,
       info: []
     };
   }
@@ -81,6 +61,7 @@ class App extends Component {
     let userContract
     let redeemContract
     let practiceContract
+    let vehicleServicesContract
 
     serviceContract = new web3.eth.Contract(Services.abi, Services.networks[networkId].address)
     this.setState({ services: serviceContract })
@@ -93,6 +74,9 @@ class App extends Component {
 
     practiceContract = new web3.eth.Contract(Practice_Test.abi, Practice_Test.networks[networkId].address)
     this.setState({ practice_test: practiceContract })
+
+    vehicleServicesContract = new web3.eth.Contract(VehicleServices.abi, VehicleServices.networks[networkId].address)
+    this.setState({ practice_test: vehicleServicesContract })
 
     const infoCount = await serviceContract.methods.infoCount().call()
     //console.log(infoCount)
@@ -119,6 +103,9 @@ class App extends Component {
             <Route exact path="/" element={<Home />} />
             <Route exact path="/account" element={<Account account={this.state.account} services={this.state.services} user={this.state.user} web3={this.state.web3} info={this.state.info}/>}  />
             <Route exact path="/PracticeTest" element={<PracticeTest account={this.state.account} services={this.state.services} user={this.state.user} web3={this.state.web3} practice_test={this.state.practice_test}/>}  />
+            <Route path="/onlineServices" element={<Test />} />
+            <Route path="/idServices" element={<Test />} />
+            <Route path="/vehicleServices" element={<VehicleS account={this.state.account} web3={this.state.web3} vehicle={this.state.vehicle}/>} />
             <Route path="/test" element={<Test />} />
           </Routes>
         </div>
@@ -127,4 +114,28 @@ class App extends Component {
   }
 }
 
+function Test() {
+  return (
+    <div>
+      Hi
+    </div>
+  )
+}
+
+function Home() {
+  return (
+    <div style={{ width: '50%', height: '50%', margin: '0 auto', textAlign: 'center', padding: '250px' }}>
+      <div style={{ background: 'white', borderRadius: '10px', padding: '10px' }}>
+        <h1>Welcome to the DMV!</h1>
+        <p>
+          Ensure the <a href={'https://trufflesuite.com/ganache/'} target={'_blank'}>Ganache</a> server is running
+          <br></br>
+          and
+          <br></br>
+          it has been connected to <a href={'https://metamask.io/'} target={'_blank'}>Metamask</a>
+        </p>
+      </div>
+    </div>
+  )
+}
 export default App;
