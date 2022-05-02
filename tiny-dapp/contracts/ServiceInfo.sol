@@ -87,6 +87,16 @@ contract ServiceInfo {
         emit InformationAdded(payable(msg.sender), _name, _dob);
     }
 
+    function isOwner() public view returns (bool) {
+        
+        return msg.sender == information[msg.sender].person;
+    }
+
+    modifier onlyOwner() {
+        require(isOwner(), "Function accessible only by the owner !!");
+        _;
+    }
+
     function uploadVital(
         string memory _deathCertificate,
         string memory _marriageCertificate,
@@ -96,7 +106,7 @@ contract ServiceInfo {
     ) public {
 
         require(msg.sender != address(0));
-
+        
         vital[msg.sender] = Vital(
             "QmNWRgSuJD3ggytUXdBQ4eNYq4iXvXHDJZWqJdGmvQ9yeJ",
             _deathCertificate,
@@ -115,6 +125,14 @@ contract ServiceInfo {
             payable(msg.sender)
         );
     }
+
+    function updateLicense(string memory number, string memory date) public onlyOwner{
+        license[msg.sender]=License(msg.sender, number, date);
+    }
+    function updateAddress(string memory street, string memory state, string memory zip) public onlyOwner{
+        streetAddress[msg.sender]=Address(msg.sender, street, state, zip);
+    }
+
     function getInfo(address id) public view returns(string memory, string memory){
         return(information[id].name, information[id].dob);
     }

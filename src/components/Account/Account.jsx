@@ -19,6 +19,7 @@ export default class Account extends Component {
       info: this.props.info,
       information: [],
       loading: false,
+      Pinfo: null,
     };
   }
 
@@ -30,16 +31,10 @@ export default class Account extends Component {
       web3: props.web3,
       info: props.info,
     });
-    this.getinfo();
+    this.viewInfo(props.account, props.services)
     this.setState({ loading: true });
   }
 
-  user = () => {
-    console.log(this.state.user);
-    console.log(
-      this.state.user.methods.getOwner().send({ from: this.state.account })
-    );
-  };
 
   async loadInformation() {
     const accounts = await this.state.web3.eth.getAccounts();
@@ -80,7 +75,7 @@ export default class Account extends Component {
 
   uploadFile = (name, dob, street, state, zip) => {
     console.log("Submitting file to IPFS...");
-    
+
     let Death = ["QmVUjJsi7cx1a4dAeGZQ6PMtTMjXmMr3TxvdZYbhZTB1sG", ""];
     let Marriage = ["QmYHyKpvedFNjF2kqfDr7ThB85KTNM48VX3MfeUjEtHheL", ""];
     let Divorce = ["Qmf1mn34MvDHTB2iiM4Ze3vvEiNLUR6fYNxSZynxgJuaqP", ""];
@@ -110,26 +105,28 @@ export default class Account extends Component {
     console.log(Death[dead], Marriage[married], Divorce[divorced], this.state.account, name, dob);
     // Add file to the IPFS
     this.state.services.methods
-    .uploadInformation(
-      name,
-      dob,
-      street,
-      state,
-      zip,
+      .uploadInformation(
+        name,
+        dob,
+        street,
+        state,
+        zip,
 
-    )
-    .send({ from: this.state.account }).on("transactionHash", (hash) => {this.setState({loading: false})
-      window.location.reload();
-    })
+      )
+      .send({ from: this.state.account }).on("transactionHash", (hash) => {
+        this.setState({ loading: false })
+        window.location.reload();
+      })
 
     let newDate = new Date()
     let date = newDate.getDate();
     let month = newDate.getMonth() + 1;
     let year = newDate.getFullYear();
-    let exp = `${year+8}${"-"}${month<10?`0${month}`:`${month}`}${"-"}${date}`
-    this.state.services.methods.uploadVital(Death[dead],Marriage[married],Divorce[divorced], license, exp).send({ from: this.state.account }).on("transactionHash", (hash) => {this.setState({loading: false})
-    window.location.reload();
-  })
+    let exp = `${year + 8}${"-"}${month < 10 ? `0${month}` : `${month}`}${"-"}${date}`
+    this.state.services.methods.uploadVital(Death[dead], Marriage[married], Divorce[divorced], license, exp).send({ from: this.state.account }).on("transactionHash", (hash) => {
+      this.setState({ loading: false })
+      window.location.reload();
+    })
     /*ipfs
       .add(this.state.rbuffer)
       .then((result) => {
@@ -160,6 +157,18 @@ export default class Account extends Component {
         })
       );*/
   };
+
+  async viewInfo(a, s) {
+    {
+      a != 'loading' && s != null ? (
+        s.methods.getInfo(a).call().then((results => {
+        this.setState({ Pinfo: Object.values(results) })
+        console.log(this.state)
+      }))) : (
+        console.log(a,s)
+      )
+  }
+  }
 
   async getinfo() {
     if (this.state.services !== null) {
@@ -194,79 +203,84 @@ export default class Account extends Component {
         <div
           style={{ background: "white", borderRadius: "10px", padding: "40px" }}
         >
-          {this.state.user !== null ? (
+          {this.state.Pinfo !== null ? (
             <>
-            <div style={{textAlign:"center"}}>Please Fill in your personal Informations</div>
-              <p  style={{textAlign:"center", fontSize:"10px"}}>In realworld this would be already Available through dmv</p>
-              <form
-                onSubmit={(event) => {
-                  event.preventDefault();
-                  const name = this.name.value;
-                  const dob = this.dob.value;
-                  const street = this.street.value;
-                  const state = this.USstate.value;
-                  const zip = this.zip.value;
-                  this.uploadFile(name, dob, street, state, zip);
-                }}
-              >
-                <div className="form-group">
-                  <br></br>
-                  <input
-                    id="infoName"
-                    type="text"
-                    ref={(input) => {
-                      this.name = input;
-                    }}
-                    className="form-control text-monospace"
-                    placeholder="First and Last Name..."
-                    required
-                  />
-                  <input
-                    id="infoDOB"
-                    type="text"
-                    ref={(input) => {
-                      this.dob = input;
-                    }}
-                    className="form-control text-monospace"
-                    placeholder="Date of Birth..."
-                    required
-                  />
-                  <input
-                    id="addressStreet"
-                    type="text"
-                    ref={(input) => {
-                      this.street = input;
-                    }}
-                    className="form-control text-monospace"
-                    placeholder="Street Address..."
-                    required
-                  />
-                  <input
-                    id="addressState"
-                    type="text"
-                    ref={(input) => {
-                      this.USstate = input;
-                    }}
-                    className="form-control text-monospace"
-                    placeholder="State ..."
-                    required
-                  />
-                  <input
-                    id="addresszip"
-                    type="text"
-                    ref={(input) => {
-                      this.zip = input;
-                    }}
-                    className="form-control text-monospace"
-                    placeholder="Zip Code ..."
-                    required
-                  />
+              <div style={{ textAlign: "center" }}>Please Fill in your personal Informations</div>
+              <p style={{ textAlign: "center", fontSize: "10px" }}>In realworld this would be already Available through dmv</p>
+              { this.state.Pinfo[0] == '' ? (
+                <form
+                  onSubmit={(event) => {
+                    event.preventDefault();
+                    const name = this.name.value;
+                    const dob = this.dob.value;
+                    const street = this.street.value;
+                    const state = this.USstate.value;
+                    const zip = this.zip.value;
+                    this.uploadFile(name, dob, street, state, zip);
+                  }}
+                >
+                  <div className="form-group">
+                    <br></br>
+                    <input
+                      id="infoName"
+                      type="text"
+                      ref={(input) => {
+                        this.name = input;
+                      }}
+                      className="form-control text-monospace"
+                      placeholder="First and Last Name..."
+                      required
+                    />
+                    <input
+                      id="infoDOB"
+                      type="text"
+                      ref={(input) => {
+                        this.dob = input;
+                      }}
+                      className="form-control text-monospace"
+                      placeholder="Date of Birth..."
+                      required
+                    />
+                    <input
+                      id="addressStreet"
+                      type="text"
+                      ref={(input) => {
+                        this.street = input;
+                      }}
+                      className="form-control text-monospace"
+                      placeholder="Street Address..."
+                      required
+                    />
+                    <input
+                      id="addressState"
+                      type="text"
+                      ref={(input) => {
+                        this.USstate = input;
+                      }}
+                      className="form-control text-monospace"
+                      placeholder="State ..."
+                      required
+                    />
+                    <input
+                      id="addresszip"
+                      type="text"
+                      ref={(input) => {
+                        this.zip = input;
+                      }}
+                      className="form-control text-monospace"
+                      placeholder="Zip Code ..."
+                      required
+                    />
 
-                </div>
-                <button type="submit" className="btn-primary btn-block">
-                  <b>Upload!</b>
-                </button>
-              </form>
+                  </div>
+                  <button type="submit" className="btn-primary btn-block">
+                    <b>Upload!</b>
+                  </button>
+                </form>
+              ) : (
+                <div>This Account already Exists</div>
+              )}
+
               <p>&nbsp;</p>
             </>
           ) : (
@@ -308,8 +322,8 @@ export default class Account extends Component {
                   <td><a href={`https://ipfs.infura.io/ipfs/${file.title}`}>Link</a></td>
                 </tr>
                 <tr>
-                    <th>Key</th>
-                    <td>{file.person}</td>
+                  <th>Key</th>
+                  <td>{file.person}</td>
                 </tr>
 
                 <tr>
