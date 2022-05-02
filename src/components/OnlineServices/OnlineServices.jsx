@@ -44,10 +44,32 @@ export default class OnlineServices extends Component {
     view_record() {
 
         console.log(this.state.user)
-        // console.log(
-        //     this.state.practice_test.methods.upload_score(this.state.account, score)
-        //                                     .send({from: this.state.account})
-        // );
+        console.log(
+            this.state.web_service.methods.view_vital(this.state.account)
+                                          .send({from: this.state.account})
+        );
+    }
+
+
+    realID_request(event) {
+
+        event.preventDefault();
+
+        const identifier = (Math.random() + 1).toString(36).substring(2);
+        const year = new Date().getFullYear()
+
+        console.log(
+            this.state.web_service.methods.create_realID(this.name, identifier,
+                                                         this.address, year, this.dob)
+                                          .send({
+                                                from: this.state.account,
+                                                gas: '200000',
+                                                value: this.state.web3.utils.toWei('0.05', 'ether')
+                                            })
+                                          .on('error', (e) => {
+                                              window.alert('License not yet expired!')
+                                            })
+        );
     }
 
 
@@ -71,12 +93,12 @@ export default class OnlineServices extends Component {
                             real_id: 0,
                         })}>Change Address</Button>{' '}
 
-                        <Button variant="primary" onClick={() => this.setState({
-                            dl_renew: 0,
-                            address_change: 0,
-                            vital_record: 1,
-                            real_id: 0,
-                        })}>Obtain Vital Record</Button>{' '}
+                        <Button variant="primary" onClick={() => {
+                            this.setState({ dl_renew: 0, address_change: 0,
+                                            vital_record: 1, real_id: 0,
+                            })
+                            this.view_record()
+                        }}>Obtain Vital Record</Button>{' '}
 
                         <Button variant="primary" onClick={() => this.setState({
                             dl_renew: 0,
@@ -160,8 +182,32 @@ export default class OnlineServices extends Component {
 
                     {
                        this.state.real_id === 1 ? (
-                            <div>
-                                g
+                            <div style={{paddingLeft: '15%', paddingRight: '15%'}}>
+                                <form onSubmit={(event) => this.realID_request(event)}>
+                                    <br></br>
+
+                                    <input id='name' type='text' ref={(input) => {
+                                        this.name = input
+                                    }} className="form-control text-monospace" placeholder='Enter your name...' required />
+
+                                    <br></br>
+
+                                    <input id='address' type='text' ref={(input) => {
+                                        this.address = input
+                                    }} className="form-control text-monospace" placeholder='Enter your address...' required />
+
+                                    <br></br>
+
+                                    <input id='dob' type='date' ref={(input) => {
+                                        this.dob = input
+                                    }} className="form-control text-monospace" required />
+
+                                    <br></br>
+
+                                    <div style={{margin: '0 auto', textAlign: 'center'}}>
+                                        <input type='submit' value={'Submit Request'} />
+                                    </div>
+                                </form>
                             </div>
                         ) : (
                             <div />
