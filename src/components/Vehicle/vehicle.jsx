@@ -58,7 +58,7 @@ export default class VehicleS extends Component {
                 });
             })
             .on("error", (e) => {
-                window.alert("Error");
+                window.alert("You do not access to this");
                 this.setState({ loading: false });
             })
         this.setOwner(vin)
@@ -105,7 +105,7 @@ export default class VehicleS extends Component {
             });
             window.location.reload();
         }).on("error", (e) => {
-            window.alert("Error");
+            window.alert("You do not access to this");
             this.setState({ loading: false })
         })
     }
@@ -121,7 +121,7 @@ export default class VehicleS extends Component {
             });
             window.location.reload();
         }).on("error", (e) => {
-            window.alert("Error");
+            window.alert("You do not access to this");
             this.setState({ loading: false })
         })
     }
