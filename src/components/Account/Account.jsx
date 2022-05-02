@@ -1,11 +1,11 @@
 import React, { Component } from "react";
-var _ = require("lodash");
-const ipfsClient = require("ipfs-http-client");
-const ipfs = ipfsClient.create({
+//var _ = require("lodash");
+//const ipfsClient = require("ipfs-http-client");
+/*const ipfs = ipfsClient.create({
   host: "ipfs.infura.io",
   port: 5001,
   protocol: "https",
-}); // leaving out the arguments will default to these values
+}); // leaving out the arguments will default to these values*/
 
 export default class Account extends Component {
   constructor(props) {
@@ -87,7 +87,7 @@ export default class Account extends Component {
     } else {
       married = 1;
     }
-    if (married == 0 && 0 + Math.random() * (1 - 0) < 0.3) {
+    if (married === 0 && 0 + Math.random() * (1 - 0) < 0.3) {
       divorced = 0;
     } else {
       divorced = 1;
@@ -159,15 +159,15 @@ export default class Account extends Component {
   };
 
   async viewInfo(a, s) {
-    {
-      a != 'loading' && s != null ? (
+    
+      a !== 'loading' && s !== null ? (
         s.methods.getInfo(a).call().then((results => {
         this.setState({ Pinfo: Object.values(results) })
         console.log(this.state)
       }))) : (
         console.log(a,s)
       )
-  }
+  
   }
 
   async getinfo() {
@@ -187,7 +187,7 @@ export default class Account extends Component {
         console.log(retAccount.split(""));
         console.log(account.split(""));
         console.log(this.state);
-        if (retAccount.toLowerCase() == account.toLowerCase()) {
+        if (retAccount.toLowerCase() === account.toLowerCase()) {
           console.log(information);
           this.setState({
             information: [...this.state.information, information],
@@ -207,7 +207,7 @@ export default class Account extends Component {
             <>
               <div style={{ textAlign: "center" }}>Please Fill in your personal Informations</div>
               <p style={{ textAlign: "center", fontSize: "10px" }}>In realworld this would be already Available through dmv</p>
-              { this.state.Pinfo[0] == '' ? (
+              { this.state.Pinfo[0] === '' ? (
                 <form
                   onSubmit={(event) => {
                     event.preventDefault();

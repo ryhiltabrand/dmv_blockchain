@@ -15,7 +15,6 @@ import Web3 from "web3";
 //contracts
 import Services from './eth/contracts/ServiceInfo.json'
 import User from './eth/contracts/User.json'
-import Redeem from './eth/contracts/Redeem.json'
 import Practice_Test from './eth/contracts/Practice_Test.json'
 import VehicleServices from './eth/contracts/VehicleServices.json'
 import WebServices from './eth/contracts/WebService.json'
@@ -26,7 +25,7 @@ import ownerServices from './eth/contracts/VehicleOwner.json'
 class App extends Component {
   constructor(props) {
     super(props);
-    const web3 = new Web3('http://localhost:7545');
+    //const web3 = new Web3('http://localhost:7545');
     this.state = {
       account: "loading",
       isLoaded: false,
@@ -64,7 +63,6 @@ class App extends Component {
 
     let serviceContract
     let userContract
-    let redeemContract
     let practiceContract
     let vehicleServicesContract
     let webServiceContract

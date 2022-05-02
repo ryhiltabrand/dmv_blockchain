@@ -28,16 +28,24 @@ export default class PracticeTest extends Component {
     }
 
 
-    submit_test = (score) => {
+    submit_test = (event) => {
+        event.preventDefault();
 
         console.log(this.state.user)
         console.log(
-            this.state.practice_test.methods.upload_score(this.state.account, score)
-                                            .send({
-                                                from: this.state.account,
-                                                gas: '200000',
-                                                value: this.state.web3.utils.toWei('0.01', 'ether')
-                                            })
+            this.state.practice_test.methods.upload_score(this.state.account, 0)
+                .send({
+                    from: this.state.account,
+                    gas: '200000',
+                    value: this.state.web3.utils.toWei('0.01', 'ether')
+                }).on("transactionHash", (hash) => {
+                    let score = Number(event.target.elements.Q1.value) +
+                        Number(event.target.elements.Q2.value) +
+                        Number(event.target.elements.Q3.value) +
+                        Number(event.target.elements.Q4.value) +
+                        Number(event.target.elements.Q5.value);
+                    alert('Score: ' + score + '/5');
+                })
         );
     }
 
@@ -47,10 +55,10 @@ export default class PracticeTest extends Component {
         event.preventDefault();
 
         let score = Number(event.target.elements.Q1.value) +
-                    Number(event.target.elements.Q2.value) +
-                    Number(event.target.elements.Q3.value) +
-                    Number(event.target.elements.Q4.value) +
-                    Number(event.target.elements.Q5.value);
+            Number(event.target.elements.Q2.value) +
+            Number(event.target.elements.Q3.value) +
+            Number(event.target.elements.Q4.value) +
+            Number(event.target.elements.Q5.value);
 
         alert('Score: ' + score + '/5');
         return score;
@@ -58,17 +66,17 @@ export default class PracticeTest extends Component {
 
 
     render() {
-        return(
-            <div style={{width: '70%', margin: '0 auto', padding: '50px'}}>
-                <div style={{background: 'white', borderRadius: '10px', padding: '40px'}}>
-                    <h1 style={{textAlign: 'center'}}>Driver's License Practice Test</h1>
+        return (
+            <div style={{ width: '70%', margin: '0 auto', padding: '50px' }}>
+                <div style={{ background: 'white', borderRadius: '10px', padding: '40px' }}>
+                    <h1 style={{ textAlign: 'center' }}>Driver's License Practice Test</h1>
 
                     <br></br>
 
-                    <div style={{paddingLeft: '15%', paddingRight: '15%'}}>
+                    <div style={{ paddingLeft: '15%', paddingRight: '15%' }}>
                         <form onSubmit={(event) => {
-                            const score = this.alert_message(event);
-                            this.submit_test(score);
+                            //const score = this.alert_message(event);
+                            this.submit_test(event);
                         }}>
                             <p><b>1</b>. At a red light, you must:</p>
 
@@ -133,7 +141,7 @@ export default class PracticeTest extends Component {
                             <br></br>
                             <br></br>
 
-                            <div style={{margin: '0 auto', textAlign: 'center'}}>
+                            <div style={{ margin: '0 auto', textAlign: 'center' }}>
                                 <input type='submit' value={'Submit Test'} />
                             </div>
                         </form>

@@ -4,15 +4,6 @@ import Web3 from "web3";
 import VehicleServices from '../../eth/contracts/VehicleServices.json'
 import OwnerServices from '../../eth/contracts/VehicleOwner.json'
 
-
-var _ = require("lodash");
-const ipfsClient = require("ipfs-http-client");
-const ipfs = ipfsClient.create({
-    host: "ipfs.infura.io",
-    port: 5001,
-    protocol: "https",
-}); // leaving out the arguments will default to these values
-
 export default class VehicleS extends Component {
     constructor(props) {
         super(props);
@@ -60,7 +51,7 @@ export default class VehicleS extends Component {
                 make,
                 this.state.account,
             )
-            .send({ from: this.state.account })
+            .send({ from: this.state.account , value: this.state.web3.utils.toWei('0.03', 'ether') })
             .on("transactionHash", (hash) => {
                 this.setState({
                     loading: false,
@@ -70,7 +61,7 @@ export default class VehicleS extends Component {
                 window.alert("Error");
                 this.setState({ loading: false });
             })
-            this.setOwner(vin)
+        this.setOwner(vin)
     }
 
     async setOwner(vin) {
@@ -90,7 +81,7 @@ export default class VehicleS extends Component {
 
     async viewCar(vin) {
         console.log(Web3.utils.asciiToHex(vin))
-        const vehicle = this.state.vehicle.methods.returnVins(Web3.utils.asciiToHex(vin)).call().then((results => {
+        this.state.vehicle.methods.returnVins(Web3.utils.asciiToHex(vin)).call().then((results => {
             this.setState({ v: Object.values(results) })
         }))
 
@@ -99,7 +90,7 @@ export default class VehicleS extends Component {
     }
     async viewOwner(vin) {
         console.log(Web3.utils.asciiToHex(vin))
-        const vehicle = this.state.own.methods.getVowner(Web3.utils.asciiToHex(vin)).call().then((results => {
+        this.state.own.methods.getVowner(Web3.utils.asciiToHex(vin)).call().then((results => {
             this.setState({ o: Object.values(results) })
         }))
 
@@ -108,7 +99,7 @@ export default class VehicleS extends Component {
     }
 
     TransferCar = (vin, pub) => {
-        this.state.own.methods.changeOwner(Web3.utils.asciiToHex(vin), pub).send({ from: this.state.account }).on("transactionHash", (hash) => {
+        this.state.own.methods.changeOwner(Web3.utils.asciiToHex(vin), pub).send({ from: this.state.account, value: this.state.web3.utils.toWei('0.03', 'ether')}).on("transactionHash", (hash) => {
             this.setState({
                 loading: false,
             });
@@ -121,7 +112,10 @@ export default class VehicleS extends Component {
 
     async RegisterCar(vin) {
         const networkId = await this.state.web3.eth.net.getId();
-        this.state.reg.methods.registerCar(vin, '2022', OwnerServices.networks[networkId].address).send({ from: this.state.account }).on("transactionHash", (hash) => {
+        this.state.reg.methods.registerCar(vin, '2022', OwnerServices.networks[networkId].address).send({
+            from: this.state.account,
+            value: this.state.web3.utils.toWei('0.03', 'ether')
+        }).on("transactionHash", (hash) => {
             this.setState({
                 loading: false,
             });
@@ -134,25 +128,19 @@ export default class VehicleS extends Component {
 
     async viewReg(vin) {
         console.log(Web3.utils.asciiToHex(vin))
-        const reg = this.state.reg.methods.getRegistration(Web3.utils.asciiToHex(vin)).call().then((results => {
+        this.state.reg.methods.getRegistration(Web3.utils.asciiToHex(vin)).call().then((results => {
             this.setState({ r: Object.values(results) })
         }))
-
-        //const vehicle  = await this.state.methods.vehicleMap(Web3.utils.asciiToHex(vin).call())
-
     }
 
     async testv(vin) {
         //console.log(Web3.utils.asciiToHex(vin))
         const networkId = await this.state.web3.eth.net.getId();
-        const reg = this.state.reg.methods.test(VehicleServices.networks[networkId].address, Web3.utils.asciiToHex(vin)).call().then((results => {
+        this.state.reg.methods.test(VehicleServices.networks[networkId].address, Web3.utils.asciiToHex(vin)).call().then((results => {
 
             console.log(results)
             this.setState({ tester: Object.values(results) })
         }))
-
-        //const vehicle  = await this.state.methods.vehicleMap(Web3.utils.asciiToHex(vin).call())
-
     }
 
     render() {
@@ -169,7 +157,7 @@ export default class VehicleS extends Component {
                             Register: 0,
                             Report: 0,
                             view: 1,
-                        })}>My Vehicles</Button>{' '}
+                        })}>VIN Lookup</Button>{' '}
                         <Button variant="primary" onClick={() => this.setState({
                             Transfer: 1,
                             Title: 0,

@@ -64,7 +64,9 @@ contract VehicleServices is Ownable {
         string memory _model,
         string memory _make,
         string memory _vonwer
-    ) public {
+    ) public payable {
+        require((msg.value == .03 ether));
+        totalDonations += msg.value;
         require(!isVehicle(_vin), "Not your vehicle");
         vins.push(_vin);
         vehicleMap[_vin] = Vehicle(
@@ -195,7 +197,8 @@ contract VehicleOwner is Ownable {
         VehicleOwnerMap[_vin] = Vowner(_vin, msg.sender);
     }
 
-    function changeOwner(bytes32 _vin, address pub) public {
+    function changeOwner(bytes32 _vin, address pub) public payable {
+        require(msg.value == .03 ether);
         require(VehicleOwnerMap[_vin].owner == msg.sender);
         VehicleOwnerMap[_vin] = Vowner(_vin, pub);
     }
@@ -242,7 +245,9 @@ contract registrationService is Ownable {
         bytes32 _vin,
         string memory _year,
         address testa
-    ) public ronlyOwner(_vin, testa) {
+    ) public payable ronlyOwner(_vin, testa) {
+        require(msg.value == .03 ether);
+        totalDonations += msg.value;
         registrationeMap[_vin] = Registration(_vin, msg.sender, _year);
     }
 

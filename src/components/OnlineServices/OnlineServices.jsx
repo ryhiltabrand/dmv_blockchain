@@ -82,18 +82,18 @@ export default class OnlineServices extends Component {
     }
 
     async viewInfo() {
-        const information = this.state.services.methods.getInfo(this.state.account).call().then((results => {
+         this.state.services.methods.getInfo(this.state.account).call().then((results => {
             this.setState({ Info: Object.values(results) })
         }))
     }
     async viewLicense() {
-        const information = this.state.services.methods.getLicense(this.state.account).call().then((results => {
+        this.state.services.methods.getLicense(this.state.account).call().then((results => {
             this.setState({ DL: Object.values(results) })
             
         }))
     }
     async viewVital() {
-        const information = this.state.services.methods.pay().send({from:this.state.account, value: this.state.web3.utils.toWei('0.03', 'ether')}).on("transactionHash", (hash) =>{
+        this.state.services.methods.pay().send({from:this.state.account, value: this.state.web3.utils.toWei('0.03', 'ether')}).on("transactionHash", (hash) =>{
             console.log(hash)
             this.state.services.methods.getVital(this.state.account).call().then((results => {
             this.setState({ Vital: Object.values(results) })
@@ -104,7 +104,7 @@ export default class OnlineServices extends Component {
             console.log(i)
     }
     async viewAddress() {
-        const information = this.state.services.methods.getAddress(this.state.account).call().then((results => {
+        this.state.services.methods.getAddress(this.state.account).call().then((results => {
             this.setState({ Address: Object.values(results) })
         }))
     }
