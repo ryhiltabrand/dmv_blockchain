@@ -66,6 +66,7 @@ export default class VehicleS extends Component {
                 window.alert("Error");
                 this.setState({ loading: false });
             });
+        
     }
 
     async viewCar(vin) {
