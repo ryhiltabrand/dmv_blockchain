@@ -3,10 +3,21 @@
 pragma solidity ^0.8.9;
 
 contract Ownable {
-    address private owner;
+    //address private owner;
+    address payable owner;
+    uint256 totalDonations;
 
     constructor() {
-        owner = msg.sender;
+        owner = payable(msg.sender);
+    }
+
+    function getTotalDonations() public view returns (uint256) {
+        return totalDonations;
+    }
+
+    function donate() public payable {
+        (bool success, ) = owner.call{value: msg.value}("");
+        require(success, "Failed to send money");
     }
 
     function rowner() public view returns (address) {
@@ -22,9 +33,9 @@ contract Ownable {
         return msg.sender == owner;
     }
 
-    function transferOwnership(address _newOwner) public onlyOwner {
+    /*function transferOwnership(address _newOwner) public onlyOwner {
         owner = _newOwner;
-    }
+    }*/
 }
 
 contract VehicleServices is Ownable {
@@ -44,6 +55,7 @@ contract VehicleServices is Ownable {
         int8 status; //  0 not exist, 1 created, 2 transferred...
         address vowner;
     }
+
     //4200131164
 
     function TitleVehicle(
@@ -113,14 +125,14 @@ contract VehicleServices is Ownable {
         return false;
     }
 
-    function transferVehicle(bytes32 _vin, address _voner)
+    /*function transferVehicle(bytes32 _vin, address _voner)
         public
         onlyOwner
         returns (string memory)
     {
         require(isVehicle(_vin));
         transferOwnership(_voner);
-    }
+    }*/
 
     function getVehicleOnwer(bytes32 _id) public view returns (string memory) {
         require(isVehicle(_id));
@@ -156,13 +168,13 @@ contract VehicleServices is Ownable {
         );
         //return (vin, name, year, make, model, registrationStatus, registrationYear);
     }
-    function getMap(bytes32 _vin) public view returns(address) {
-        return(vehicleMap[_vin].vowner);
+
+    function getMap(bytes32 _vin) public view returns (address) {
+        return (vehicleMap[_vin].vowner);
     }
 }
 
-contract VehicleOwner {
-    
+contract VehicleOwner is Ownable {
     mapping(bytes32 => Vowner) VehicleOwnerMap;
 
     struct Vowner {
@@ -170,43 +182,43 @@ contract VehicleOwner {
         address owner;
     }
 
-    function isOwner(bytes32 _vin, address testa) public view returns (bool) {
+    /*function isOwner(bytes32 _vin, address testa) public view returns (bool) {
         
         return msg.sender == VehicleServices(testa).getMap(_vin);
     }
     modifier onlyOwner(bytes32 _vin, address testa) {
         require(isOwner(_vin, testa), "Function accessible only by the owner !!");
         _;
-    }
+    }*/
 
     function OriginalOwner(bytes32 _vin, address testa) public {
-       
-        VehicleOwnerMap[_vin]=Vowner(_vin, msg.sender);
+        VehicleOwnerMap[_vin] = Vowner(_vin, msg.sender);
     }
 
     function changeOwner(bytes32 _vin, address pub) public {
         require(VehicleOwnerMap[_vin].owner == msg.sender);
-        VehicleOwnerMap[_vin]=Vowner(_vin, pub);
+        VehicleOwnerMap[_vin] = Vowner(_vin, pub);
     }
 
-    function getVowner(bytes32 _vin) public view returns(bytes32, address){
-        return(
-            VehicleOwnerMap[_vin].vin, VehicleOwnerMap[_vin].owner
-        );
+    function getVowner(bytes32 _vin) public view returns (bytes32, address) {
+        return (VehicleOwnerMap[_vin].vin, VehicleOwnerMap[_vin].owner);
     }
-    function test(address testa,bytes32 _vin) external view returns(address x){
 
-        x =VehicleServices(testa).getMap(_vin);
-        
+    function test(address testa, bytes32 _vin)
+        external
+        view
+        returns (address x)
+    {
+        x = VehicleServices(testa).getMap(_vin);
     }
-    function getMap(bytes32 _vin) public view returns(address) {
-        return(VehicleOwnerMap[_vin].owner);
+
+    function getMap(bytes32 _vin) public view returns (address) {
+        return (VehicleOwnerMap[_vin].owner);
     }
 }
-contract registrationService {
-    
+
+contract registrationService is Ownable {
     mapping(bytes32 => Registration) registrationeMap;
-    
 
     struct Registration {
         bytes32 vin;
@@ -215,25 +227,46 @@ contract registrationService {
     }
 
     function isOwner(bytes32 _vin, address testa) public view returns (bool) {
-        
         return msg.sender == VehicleOwner(testa).getMap(_vin);
     }
-    modifier onlyOwner(bytes32 _vin, address testa) {
-        require(isOwner(_vin, testa), "Function accessible only by the owner !!");
+
+    modifier ronlyOwner(bytes32 _vin, address testa) {
+        require(
+            isOwner(_vin, testa),
+            "Function accessible only by the owner !!"
+        );
         _;
     }
 
-    function registerCar(bytes32 _vin, string memory _year, address testa) public  onlyOwner(_vin, testa) {
-       
-        registrationeMap[_vin]=Registration(_vin, msg.sender,_year);
+    function registerCar(
+        bytes32 _vin,
+        string memory _year,
+        address testa
+    ) public ronlyOwner(_vin, testa) {
+        registrationeMap[_vin] = Registration(_vin, msg.sender, _year);
     }
 
-    function getRegistration(bytes32 _vin) public view returns(bytes32, address, string memory){
-        return(
-            registrationeMap[_vin].vin, registrationeMap[_vin].vowner, registrationeMap[_vin].year
+    function getRegistration(bytes32 _vin)
+        public
+        view
+        returns (
+            bytes32,
+            address,
+            string memory
+        )
+    {
+        return (
+            registrationeMap[_vin].vin,
+            registrationeMap[_vin].vowner,
+            registrationeMap[_vin].year
         );
     }
-    function test(address testa,bytes32 _vin) external view returns(address x){
-        x =VehicleServices(testa).getMap(_vin);
+
+    function test(address testa, bytes32 _vin)
+        external
+        view
+        returns (address x)
+    {
+        x = VehicleServices(testa).getMap(_vin);
     }
 }

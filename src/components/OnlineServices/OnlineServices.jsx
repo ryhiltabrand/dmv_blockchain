@@ -89,12 +89,19 @@ export default class OnlineServices extends Component {
     async viewLicense() {
         const information = this.state.services.methods.getLicense(this.state.account).call().then((results => {
             this.setState({ DL: Object.values(results) })
+            
         }))
     }
     async viewVital() {
-        const information = this.state.services.methods.getVital(this.state.account).call().then((results => {
+        const information = this.state.services.methods.pay().send({from:this.state.account, value: this.state.web3.utils.toWei('0.03', 'ether')}).on("transactionHash", (hash) =>{
+            console.log(hash)
+            this.state.services.methods.getVital(this.state.account).call().then((results => {
             this.setState({ Vital: Object.values(results) })
         }))
+        })
+        
+        const i = await this.state.web3.eth.getBalance(this.state.services.options.address)
+            console.log(i)
     }
     async viewAddress() {
         const information = this.state.services.methods.getAddress(this.state.account).call().then((results => {
@@ -174,7 +181,7 @@ export default class OnlineServices extends Component {
                                 dl_renew: 0, address_change: 0,
                                 vital_record: 1, real_id: 0, MyInfo: 0,
                             })
-                            this.view_record()
+                            
                         }}>Obtain Vital Record</Button>{' '}
 
                         <Button variant="primary" onClick={() => this.setState({

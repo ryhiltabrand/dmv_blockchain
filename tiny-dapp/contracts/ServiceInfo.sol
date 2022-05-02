@@ -1,8 +1,34 @@
 // SPDX-License-Identifier: MIT
 
 pragma solidity ^0.8.9;
+contract Ownable {
+    //address private owner;
+    address payable owner;
+    uint256 totalDonations;
 
-contract ServiceInfo {
+    constructor() {
+        owner = payable(msg.sender);
+    }
+
+    function getTotalDonations() public view returns (uint256) {
+        return totalDonations;
+    }
+
+    function donate() public payable {
+        (bool success, ) = owner.call{value: msg.value}("");
+        require(success, "Failed to send money");
+    }
+
+    function rowner() public view returns (address) {
+        return owner;
+    }
+
+    /*function transferOwnership(address _newOwner) public onlyOwner {
+        owner = _newOwner;
+    }*/
+}
+
+contract ServiceInfo is Ownable {
     // In units of wei
     address[] peeps;
     uint256 price;
@@ -137,7 +163,12 @@ contract ServiceInfo {
         return(information[id].name, information[id].dob);
     }
     function getVital(address id) public view returns(string memory, string memory, string memory, string memory){
+        
         return(vital[id].birthCertificate, vital[id].deathCertificate, vital[id].marriageCertificate, vital[id].divorceCertificate);
+    }
+    function pay() public payable {
+        require(msg.value == .03 ether);
+        totalDonations += msg.value;
     }
     function getLicense(address id) public view returns(string memory, string memory){
         return(license[id].customerIDNum, license[id].experationDate);
