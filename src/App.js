@@ -20,7 +20,7 @@ import Practice_Test from './eth/contracts/Practice_Test.json'
 import VehicleServices from './eth/contracts/VehicleServices.json'
 import WebServices from './eth/contracts/WebService.json'
 import RegistrationServices from './eth/contracts/registrationService.json'
-
+import ownerServices from './eth/contracts/VehicleOwner.json'
 //import [contract] from 'eth/contracts/[json]';
 
 class App extends Component {
@@ -69,7 +69,8 @@ class App extends Component {
     let vehicleServicesContract
     let webServiceContract
     let regService
-
+    let ownerService
+    
     serviceContract = new web3.eth.Contract(Services.abi, Services.networks[networkId].address)
     this.setState({ services: serviceContract })
 
@@ -90,6 +91,9 @@ class App extends Component {
 
     regService = new web3.eth.Contract(RegistrationServices.abi, RegistrationServices.networks[networkId].address)
     this.setState({ registration: regService })
+
+    ownerService = new web3.eth.Contract(ownerServices.abi, ownerServices.networks[networkId].address)
+    this.setState({ Owner: ownerService })
 
     const infoCount = await serviceContract.methods.infoCount().call()
     //console.log(infoCount)
@@ -116,8 +120,8 @@ class App extends Component {
             <Route exact path="/" element={<Home />} />
             <Route exact path="/account" element={<Account account={this.state.account} services={this.state.services} user={this.state.user} web3={this.state.web3} info={this.state.info}/>}  />
             <Route exact path="/PracticeTest" element={<PracticeTest account={this.state.account} user={this.state.user} web3={this.state.web3} practice_test={this.state.practice_test}/>}  />
-            <Route path="/onlineServices" element={<OnlineServices account={this.state.account} web3={this.state.web3} web_service={this.state.web_service} />} />
-            <Route path="/vehicleServices" element={<VehicleS account={this.state.account} web3={this.state.web3} vehicle={this.state.vehicle}/>} />
+            <Route path="/onlineServices" element={<OnlineServices account={this.state.account} web3={this.state.web3} web_service={this.web_service} />} />
+            <Route path="/vehicleServices" element={<VehicleS account={this.state.account} web3={this.state.web3} vehicle={this.state.vehicle} registration={this.state.registration} owner={this.state.owner}/>} />
             <Route path="/test" element={<Test />} />
           </Routes>
         </div>
