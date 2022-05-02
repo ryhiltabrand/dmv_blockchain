@@ -1,70 +1,63 @@
-# Getting Started with Create React App
+# CS 764 Final Project - DMV Website
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Abstract
 
-## Available Scripts
+This project aims to emulate the services typically provided by the DMV. These sevices
+include registering vehicles, renewing driver's licenses, and hosting practice exams.
+Normally, these services would require a human agent; however, this project makes use
+of blockchain technology, so authentication and transactions are able to take place
+without these agents.
 
-In the project directory, you can run:
+## Required Software
 
-### `npm start`
+### Node.js
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+Node.js can be downloaded from [here](https://nodejs.org/en/).\
+Further steps are provided below.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+### Ganache
 
-### `npm test`
+Ganache allows for developers to run a simulated blockchain to test their application.
+The application also allows for developers to see what contracts are being called when
+a transaction is made.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Ganache can be downloaded [here](https://trufflesuite.com/ganache/).
 
-### `npm run build`
+*Optional*: In settings, provide the **absolute path** to the `truffle-config.js` file
+in this project to see more transaction details.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### Metamask
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Metamask is an in-browser cryptocurrency wallet that can also be used to handle
+transactions. It can be downloaded [here](https://metamask.io/).
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+**Important**: Connect Metamask with Ganache
+- Create a new network within Metamask; ensure the `RPC URL` is the **same** as the one
+  configured in Ganache
+- Get the **private key** to one of the accounts created when you set up Ganache and
+  import the account on Metamask
 
-### `npm run eject`
+## Execution
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+### Compiling and Deploying Smart Contracts
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+`cd` into the `tiny-dapp` directory; this is where all the smart contracts are.\
+Then, while ensuring **Ganache server is running**, run the following commands:
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+1. `truffle migrate --reset`
+2. `truffle compile`
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+These commands allow for us to connect the smart contracts to Ganache, which is important
+for when we go to make transactions.
 
-## Learn More
+### Deploying the Application
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+Clone this repository: `git clone https://github.com/ryhiltabrand/dmv_blockchain`
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+Then `cd` into the directory (`dmv_blockchain`) and run `npm install`.\
+This will install the dependencies for this project, which are located in `package.json`.
 
-### Code Splitting
+Then in the main project directory, run `npm start` and a web application will appear
+at the following address: [http://localhost:3000](http://localhost:3000)
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+**Make sure the Ganache server is running or you will not be able to connect Metamask to it**
