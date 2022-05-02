@@ -77,8 +77,8 @@ class App extends Component {
     userContract = new web3.eth.Contract(User.abi, User.networks[networkId].address)
     this.setState({ user: userContract })
 
-    redeemContract = new web3.eth.Contract(Redeem.abi, Redeem.networks[networkId].address)
-    this.setState({ redeem: redeemContract })
+    //redeemContract = new web3.eth.Contract(Redeem.abi, Redeem.networks[networkId].address)
+    //this.setState({ redeem: redeemContract })
 
     practiceContract = new web3.eth.Contract(Practice_Test.abi, Practice_Test.networks[networkId].address)
     this.setState({ practice_test: practiceContract })
@@ -120,8 +120,8 @@ class App extends Component {
             <Route exact path="/" element={<Home />} />
             <Route exact path="/account" element={<Account account={this.state.account} services={this.state.services} user={this.state.user} web3={this.state.web3} info={this.state.info}/>}  />
             <Route exact path="/PracticeTest" element={<PracticeTest account={this.state.account} user={this.state.user} web3={this.state.web3} practice_test={this.state.practice_test}/>}  />
-            <Route path="/onlineServices" element={<OnlineServices account={this.state.account} web3={this.state.web3} web_service={this.state.web_service} />} />
-            <Route path="/vehicleServices" element={<VehicleS account={this.state.account} web3={this.state.web3} vehicle={this.state.vehicle} registration={this.state.registration} owner={this.state.owner}/>} />
+            <Route path="/onlineServices" element={<OnlineServices account={this.state.account} web3={this.state.web3} web_service={this.state.web_service} services={this.state.services}/>} />
+            <Route path="/vehicleServices" element={<VehicleS account={this.state.account} web3={this.state.web3} vehicle={this.state.vehicle} registration={this.state.registration} owner={this.state.Owner}/>} />
             <Route path="/test" element={<Test />} />
           </Routes>
         </div>

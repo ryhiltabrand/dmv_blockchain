@@ -7,6 +7,7 @@ contract WebService {
     address payable public customer;
     uint public index = 0;
 
+
     struct ViewVital {
 
         uint id;
@@ -52,6 +53,10 @@ contract WebService {
         customer.transfer(msg.value);
     }
 
+    function paycontract() public payable {
+        require(msg.value <= 1 ether, "not enough");
+
+    }
 
     function create_realID(string memory _name, string memory _identity,
                            string memory _addr, uint _issue, string memory _dob)

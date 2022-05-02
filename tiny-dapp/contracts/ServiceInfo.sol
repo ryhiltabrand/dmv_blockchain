@@ -3,212 +3,129 @@
 pragma solidity ^0.8.9;
 
 contract ServiceInfo {
-
     // In units of wei
+    address[] peeps;
     uint256 price;
-    uint public infoCount = 0;
-    uint num_services;
+    uint256 public infoCount = 0;
+    uint256 num_services;
     address payable public customer;
-    mapping(uint => Information) public information;
-    mapping(uint => Vital) public vital;
-
-    constructor() {
-
-        price = 100000000000;   // 100,000,000,000 Wei (100 Gwei)
-        num_services = 0;
+    mapping(address => Information) public information;
+    mapping(address => Vital) public vital;
+    mapping(address => License) public license;
+    mapping(address => Address) public streetAddress;
 
 
-
-        // Online Services
-        add_service("Vehicle Registration Renewal");
-        add_service("Address Change");
-        add_service("Driver's License Renewal");
-        add_service("Update Vehicle Ownership");
-
-        // Driver / ID services
-        add_service("Practice Exams");
-        add_service("Real ID");
-        add_service("Apply for a Driver's License");
-        add_service("Medical Information");
-
-        // Vehicle services
-        add_service("Sell / Donate a Vehicle");
-        add_service("Title a Vehicle in Virginia");
-    }
-
-
-    struct Services {
-
-        uint id;
-        string name;
-        uint256 cost;
-        uint times_ordered;
-    }
 
     struct Information {
-        uint Id;
+        address person;
         string name;
         string dob;
-        string registration;
-        string streetAddress;
-        string license;
-        string vehicles;
-        string title;
-        address payable person;
+    }
+
+    struct Address {
+        address person;
+        string street;
+        string state;
+        string zipcode;
+    }
+
+    struct License {
+        address person;
+        string customerIDNum;
+        string experationDate;
     }
 
     struct Vital {
-        uint Id;
-        string vhash;
         string birthCertificate;
         string deathCertificate;
         string marriageCertificate;
         string divorceCertificate;
-        address payable person; 
+        address person;
     }
 
-
     //
-    event InformationAdded(
-        uint Id,
-        string name,
-        string dob,
-        string registration,
-        string streetAddress,
-        string license,
-        string vehicles,
-        string title,
-        address payable person
+    event InformationAdded(address person, string name, string dob);
+
+    event AddressAdded(
+        address payable person,
+        string street,
+        string state,
+        string zipcode
     );
 
     event VitalAdded(
-        uint Id,
-        string vhash,
         string birthCertificate,
         string deathCertificate,
         string marriageCertificate,
         string divorceCertificate,
-        address payable person
+        address person
     );
 
-    function uploadInformation(string memory _name, string memory _dob, string memory _registration, string memory _streetAddress, string memory _license, string memory _vehicles,string memory _title) public{
-        require(bytes(_name).length > 0);
-        require(bytes(_dob).length > 0);
-        require(bytes(_registration).length > 0);
-        require(bytes(_streetAddress).length > 0);
-        require(bytes(_license).length > 0);
-        require(bytes(_title).length > 0);
-        require(msg.sender != address(0));
-
-        infoCount ++;
-        information[infoCount] = Information(infoCount,_name, _dob, _registration,_streetAddress, _license, _vehicles, _title,payable(msg.sender));
-
-        emit InformationAdded(infoCount,_name, _dob, _registration,_streetAddress, _license, _vehicles, _title, payable(msg.sender));
-    }
-    function uploadVital(string memory _vhash,  string memory _deathCertificate, string memory _marriageCertificate, string memory _divorceCertificate) public{
-        require(bytes(_vhash).length > 0);
-
-        require(msg.sender != address(0));
-
-        vital[infoCount] = Vital(infoCount,_vhash,'QmNWRgSuJD3ggytUXdBQ4eNYq4iXvXHDJZWqJdGmvQ9yeJ', _deathCertificate, _marriageCertificate, _divorceCertificate ,payable(msg.sender));
-
-        emit VitalAdded(infoCount,_vhash,'QmNWRgSuJD3ggytUXdBQ4eNYq4iXvXHDJZWqJdGmvQ9yeJ', _deathCertificate, _marriageCertificate, _divorceCertificate ,payable(msg.sender));
-    }
-
-    struct Orders {
-
-        uint256 wallet_bal;
-        uint order_count;
-    }
-
-    // Maps services to IDs (i.e. 1 => "Permit test")
-    mapping(uint => Services) public services;
-    mapping(address => Orders) public orders;
-
-    function add_service(string memory _name) private {
-
-        num_services++;
-        services[num_services] = Services(num_services, _name, price, 0);
-    }
-
-
-    function get_price() public view returns (uint256) {
-
-        return price;
-    }
-
-
-    function set_price(uint256 _price) public {
-
-        price = _price;
-        set_service_cost();
-    }
-
-
-    function set_service_cost() private {
-
-        for (uint i = 0; i < num_services; i++) {
-
-            services[i].cost = price;
+    function stringsEquals(string memory s1, string memory s2)
+        private
+        pure
+        returns (bool)
+    {
+        bytes memory b1 = bytes(s1);
+        bytes memory b2 = bytes(s2);
+        uint256 l1 = b1.length;
+        if (l1 != b2.length) return false;
+        for (uint256 i = 0; i < l1; i++) {
+            if (b1[i] != b2[i]) return false;
         }
-    }
-
-
-    // Function allows for the customer to deposit funds into the contract
-    function deposit() public payable returns (uint256, uint256) {
-
-        require(
-            msg.value >= price,
-            "Error: Insufficient funds deposited. Please check the cost of the service"
-        );
-
-        customer = payable(msg.sender);
-        orders[customer].wallet_bal += msg.value;
-
-        return (address(this).balance, orders[customer].wallet_bal);
-    }
-
-
-    // User payment
-    function make_payment(uint256 _total_cost) private {
-
-        orders[customer].wallet_bal -= _total_cost;
-    }
-
-
-    function customer_selection(uint _serviceID, uint _count) public payable returns (bool) {
-
-        customer = payable(msg.sender);
-        uint256 total_cost = _count * services[_serviceID].cost;
-
-        // Ensure the customer can afford to make the purchase
-        require(
-            orders[customer].wallet_bal >= total_cost,
-            "Error: Insufficient funds. Please check the cost of the service"
-        );
-
-        require(
-            (_serviceID > 0 && _serviceID < num_services),
-            "Error: Invalid selection"
-        );
-
-        orders[customer].order_count = _count;
-        make_payment(total_cost);
-
         return true;
     }
 
+    function uploadInformation(string memory _name, string memory _dob, string memory street, string memory state, string memory zip) public {
+        require(bytes(_name).length > 0);
+        require(bytes(_dob).length > 0);
+        require(msg.sender != address(0));
+        //require(!stringsEquals(information[msg.sender].name, "none"));
+        //peeps.push(msg.sender);
+        information[msg.sender] = Information(msg.sender, _name, _dob);
+        streetAddress[msg.sender] = Address(msg.sender, street, state, zip);
+        emit InformationAdded(payable(msg.sender), _name, _dob);
+    }
 
-    function return_overpay() public payable {
+    function uploadVital(
+        string memory _deathCertificate,
+        string memory _marriageCertificate,
+        string memory _divorceCertificate,
+        string memory _license,
+        string memory _exp
+    ) public {
 
-        customer = payable(msg.sender);
+        require(msg.sender != address(0));
 
-        require(
-            orders[customer].wallet_bal > 0,
-            "Error: No funds to return"
+        vital[msg.sender] = Vital(
+            "QmNWRgSuJD3ggytUXdBQ4eNYq4iXvXHDJZWqJdGmvQ9yeJ",
+            _deathCertificate,
+            _marriageCertificate,
+            _divorceCertificate,
+            payable(msg.sender)
         );
 
-        customer.transfer(orders[customer].wallet_bal);
-        orders[customer].wallet_bal = 0;
+        license[msg.sender] = License(msg.sender, _license, _exp);
+
+        emit VitalAdded(
+            "QmNWRgSuJD3ggytUXdBQ4eNYq4iXvXHDJZWqJdGmvQ9yeJ",
+            _deathCertificate,
+            _marriageCertificate,
+            _divorceCertificate,
+            payable(msg.sender)
+        );
+    }
+    function getInfo(address id) public view returns(string memory, string memory){
+        return(information[id].name, information[id].dob);
+    }
+    function getVital(address id) public view returns(string memory, string memory, string memory, string memory){
+        return(vital[id].birthCertificate, vital[id].deathCertificate, vital[id].marriageCertificate, vital[id].divorceCertificate);
+    }
+    function getLicense(address id) public view returns(string memory, string memory){
+        return(license[id].customerIDNum, license[id].experationDate);
+    }
+    function getAddress(address id) public view returns(string memory, string memory, string memory){
+        return(streetAddress[id].street, streetAddress[id].state, streetAddress[id].zipcode);
     }
 }
+

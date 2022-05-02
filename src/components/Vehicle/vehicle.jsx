@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import Button from 'react-bootstrap/Button';
 import Web3 from "web3";
 import VehicleServices from '../../eth/contracts/VehicleServices.json'
+import OwnerServices from '../../eth/contracts/VehicleOwner.json'
 
 
 var _ = require("lodash");
@@ -27,14 +28,17 @@ export default class VehicleS extends Component {
             web3: this.props.web3,
             vehicle: this.props.vehicle,
             reg: this.props.registration,
+            own: this.props.owner,
             loading: false,
             vAddress: null,
 
             v: null,
             r: null,
             tester: null,
+            o: null,
         };
     }
+
 
     componentWillReceiveProps(props) {
         this.setState({
@@ -42,11 +46,12 @@ export default class VehicleS extends Component {
             web3: props.web3,
             vehicle: props.vehicle,
             reg: props.registration,
+            own: props.owner,
             loading: true
         });
     }
 
-    titleCar = (vin, year, model, make) => {
+    titleCar(vin, year, model, make) {
         this.state.vehicle.methods
             .TitleVehicle(
                 Web3.utils.asciiToHex(vin),
@@ -60,13 +65,27 @@ export default class VehicleS extends Component {
                 this.setState({
                     loading: false,
                 });
-                window.location.reload();
             })
             .on("error", (e) => {
                 window.alert("Error");
                 this.setState({ loading: false });
-            });
-        
+            })
+            this.setOwner(vin)
+    }
+
+    async setOwner(vin) {
+        const networkId = await this.state.web3.eth.net.getId();
+
+        this.state.own.methods
+            .OriginalOwner(
+                Web3.utils.asciiToHex(vin), OwnerServices.networks[networkId].address).send({ from: this.state.account })
+            .on("transactionHash", (hash) => {
+                this.setState({
+                    loading: false,
+                });
+                window.location.reload();
+            })
+
     }
 
     async viewCar(vin) {
@@ -78,9 +97,18 @@ export default class VehicleS extends Component {
         //const vehicle  = await this.state.methods.vehicleMap(Web3.utils.asciiToHex(vin).call())
 
     }
+    async viewOwner(vin) {
+        console.log(Web3.utils.asciiToHex(vin))
+        const vehicle = this.state.own.methods.getVowner(Web3.utils.asciiToHex(vin)).call().then((results => {
+            this.setState({ o: Object.values(results) })
+        }))
+
+        //const vehicle  = await this.state.methods.vehicleMap(Web3.utils.asciiToHex(vin).call())
+
+    }
 
     TransferCar = (vin, pub) => {
-        this.state.vehicle.methods.transferVehicle(Web3.utils.asciiToHex(vin), pub).send({ from: this.state.account }).on("transactionHash", (hash) => {
+        this.state.own.methods.changeOwner(Web3.utils.asciiToHex(vin), pub).send({ from: this.state.account }).on("transactionHash", (hash) => {
             this.setState({
                 loading: false,
             });
@@ -91,9 +119,9 @@ export default class VehicleS extends Component {
         })
     }
 
-    async RegisterCar (vin) {
+    async RegisterCar(vin) {
         const networkId = await this.state.web3.eth.net.getId();
-        this.state.reg.methods.registerCar(vin, '2022', VehicleServices.networks[networkId].address).send({ from: this.state.account }).on("transactionHash", (hash) => {
+        this.state.reg.methods.registerCar(vin, '2022', OwnerServices.networks[networkId].address).send({ from: this.state.account }).on("transactionHash", (hash) => {
             this.setState({
                 loading: false,
             });
@@ -117,8 +145,8 @@ export default class VehicleS extends Component {
     async testv(vin) {
         //console.log(Web3.utils.asciiToHex(vin))
         const networkId = await this.state.web3.eth.net.getId();
-        const reg = this.state.reg.methods.test(VehicleServices.networks[networkId].address,Web3.utils.asciiToHex(vin)).call().then((results => {
-            
+        const reg = this.state.reg.methods.test(VehicleServices.networks[networkId].address, Web3.utils.asciiToHex(vin)).call().then((results => {
+
             console.log(results)
             this.setState({ tester: Object.values(results) })
         }))
@@ -173,7 +201,7 @@ export default class VehicleS extends Component {
                                                 const vin = this.vin.value;
                                                 this.viewCar(vin)
                                                 this.viewReg(vin)
-                                                this.testv(vin)
+                                                this.viewOwner(vin)
                                                 //this.uploadFile(name, dob, sa, vehicle);
                                             }}
                                         >
@@ -199,17 +227,13 @@ export default class VehicleS extends Component {
                                         </form>
                                         <p>&nbsp;</p>
 
-                                        {this.state.v !== null && this.state.r !== null &&  this.state.tester !== null ? (
+                                        {this.state.v !== null && this.state.r !== null && this.state.o !== null ? (
                                             <div>
-                                                <div>{this.state.tester}</div>
+                                                <div></div>
                                                 <thead style={{ fontSize: "12px" }} >
                                                     <tr>
                                                         <th>Owner</th>
-                                                        <td>{this.state.v[0]}</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th>Owner</th>
-                                                        <td>{this.state.v[1]}</td>
+                                                        <td>{this.state.o[1]}</td>
                                                     </tr>
                                                     <tr>
                                                         <th>Vin</th>
@@ -235,10 +259,10 @@ export default class VehicleS extends Component {
                                                 </thead>
                                                 {this.state.r[2] !== "2022" ? (
                                                     <div>
-                                                        <div style={{color: "red"}}>REGISTRATION EXPIRED</div>
-                                                        <Button variant="warning" onClick={() =>this.RegisterCar(this.state.v[2])}>Register Car</Button>
+                                                        <div style={{ color: "red" }}>REGISTRATION EXPIRED</div>
+                                                        <Button variant="warning" onClick={() => this.RegisterCar(this.state.v[2])}>Register Car</Button>
                                                     </div>
-                                                ): (
+                                                ) : (
                                                     <div />
                                                 )}
                                             </div>
@@ -312,7 +336,7 @@ export default class VehicleS extends Component {
                                                 const make = this.make.value;
                                                 const model = this.model.value;
                                                 this.titleCar(vin, year, make, model)
-                                                
+
                                                 //this.uploadFile(name, dob, sa, vehicle);
 
                                             }}
@@ -371,8 +395,8 @@ export default class VehicleS extends Component {
                                 ) : (
                                     <div />
                                 )}
-                                
-                               
+
+
                             </div>
                         </div>
                     ) : (

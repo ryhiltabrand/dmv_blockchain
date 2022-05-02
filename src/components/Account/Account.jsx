@@ -61,6 +61,7 @@ export default class Account extends Component {
       console.log("buffer", this.state.rbuffer);
     };
   };
+
   captureTitle = (event) => {
     event.preventDefault();
     const file = event.target.files[0];
@@ -77,9 +78,9 @@ export default class Account extends Component {
     };
   };
 
-  uploadFile = (name, dob, sa, vehicle) => {
+  uploadFile = (name, dob, street, state, zip) => {
     console.log("Submitting file to IPFS...");
-    console.log(this.state.buffer);
+    
     let Death = ["QmVUjJsi7cx1a4dAeGZQ6PMtTMjXmMr3TxvdZYbhZTB1sG", ""];
     let Marriage = ["QmYHyKpvedFNjF2kqfDr7ThB85KTNM48VX3MfeUjEtHheL", ""];
     let Divorce = ["Qmf1mn34MvDHTB2iiM4Ze3vvEiNLUR6fYNxSZynxgJuaqP", ""];
@@ -91,7 +92,7 @@ export default class Account extends Component {
     } else {
       married = 1;
     }
-    if (married == 1 && 0 + Math.random() * (1 - 0) < 0.3) {
+    if (married == 0 && 0 + Math.random() * (1 - 0) < 0.3) {
       divorced = 0;
     } else {
       divorced = 1;
@@ -105,12 +106,31 @@ export default class Account extends Component {
     let license = Math.random()
       .toString(36)
       .slice(2);
-    var registration;
-    var title;
-    console.log(Death[dead], Marriage[married], Divorce[divorced]);
-    // Add file to the IPFS
 
-    ipfs
+    console.log(Death[dead], Marriage[married], Divorce[divorced], this.state.account, name, dob);
+    // Add file to the IPFS
+    this.state.services.methods
+    .uploadInformation(
+      name,
+      dob,
+      street,
+      state,
+      zip,
+
+    )
+    .send({ from: this.state.account }).on("transactionHash", (hash) => {this.setState({loading: false})
+      window.location.reload();
+    })
+
+    let newDate = new Date()
+    let date = newDate.getDate();
+    let month = newDate.getMonth() + 1;
+    let year = newDate.getFullYear();
+    let exp = `${year+8}${"-"}${month<10?`0${month}`:`${month}`}${"-"}${date}`
+    this.state.services.methods.uploadVital(Death[dead],Marriage[married],Divorce[divorced], license, exp).send({ from: this.state.account }).on("transactionHash", (hash) => {this.setState({loading: false})
+    window.location.reload();
+  })
+    /*ipfs
       .add(this.state.rbuffer)
       .then((result) => {
         return (registration = Object.values(result)[0]);
@@ -122,12 +142,7 @@ export default class Account extends Component {
           this.state.services.methods
             .uploadInformation(
               name,
-              dob,
-              registration,
-              sa,
-              license,
-              vehicle,
-              title
+              dob
             )
             .send({ from: this.state.account })
             .on("transactionHash", (hash) => {
@@ -143,7 +158,7 @@ export default class Account extends Component {
               this.setState({ loading: false });
             });
         })
-      );
+      );*/
   };
 
   async getinfo() {
@@ -181,15 +196,17 @@ export default class Account extends Component {
         >
           {this.state.user !== null ? (
             <>
-              <p>&nbsp;</p>
+            <div style={{textAlign:"center"}}>Please Fill in your personal Informations</div>
+              <p  style={{textAlign:"center", fontSize:"10px"}}>In realworld this would be already Available through dmv</p>
               <form
                 onSubmit={(event) => {
                   event.preventDefault();
                   const name = this.name.value;
                   const dob = this.dob.value;
-                  const sa = this.sa.value;
-                  const vehicle = this.vehicle.value;
-                  this.uploadFile(name, dob, sa, vehicle);
+                  const street = this.street.value;
+                  const state = this.USstate.value;
+                  const zip = this.zip.value;
+                  this.uploadFile(name, dob, street, state, zip);
                 }}
               >
                 <div className="form-group">
@@ -215,42 +232,36 @@ export default class Account extends Component {
                     required
                   />
                   <input
-                    id="infoSA"
+                    id="addressStreet"
                     type="text"
                     ref={(input) => {
-                      this.sa = input;
+                      this.street = input;
                     }}
                     className="form-control text-monospace"
                     placeholder="Street Address..."
                     required
                   />
                   <input
-                    id="infoVehicle"
+                    id="addressState"
                     type="text"
                     ref={(input) => {
-                      this.vehicle = input;
+                      this.USstate = input;
                     }}
                     className="form-control text-monospace"
-                    placeholder="Vehicle..."
+                    placeholder="State ..."
                     required
                   />
-                </div>
+                  <input
+                    id="addresszip"
+                    type="text"
+                    ref={(input) => {
+                      this.zip = input;
+                    }}
+                    className="form-control text-monospace"
+                    placeholder="Zip Code ..."
+                    required
+                  />
 
-                <div>
-                  Registration:{" "}
-                  <input
-                    type="file"
-                    onChange={this.captureRegistration}
-                    className="text-monospace"
-                  />
-                </div>
-                <div>
-                  Title:{" "}
-                  <input
-                    type="file"
-                    onChange={this.captureTitle}
-                    className="text-monospace"
-                  />
                 </div>
                 <button type="submit" className="btn-primary btn-block">
                   <b>Upload!</b>

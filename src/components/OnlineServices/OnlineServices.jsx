@@ -12,6 +12,7 @@ export default class OnlineServices extends Component {
             address_change: 0,
             vital_record: 0,
             real_id: 0,
+            MyInfo: 0,
 
             dead: Math.random() > 0.1 ? 0 : 1,
             married: Math.random() > 0.5 ? 0 : 1,
@@ -24,7 +25,13 @@ export default class OnlineServices extends Component {
 
             account: this.props.account,
             web3: this.props.web3,
-            web_service: this.props.web_service
+            web_service: this.props.web_service,
+            services: this.props.services,
+
+            Info: null,
+            DL: null,
+            Vital: null,
+            Address: null,
         };
 
         console.log(this.state)
@@ -36,7 +43,8 @@ export default class OnlineServices extends Component {
         this.setState({
             account: props.account,
             web3: props.web3,
-            web_service: props.web_service
+            web_service: props.web_service,
+            services: this.props.services,
         });
     }
 
@@ -46,7 +54,7 @@ export default class OnlineServices extends Component {
         console.log(this.state.user)
         console.log(
             this.state.web_service.methods.view_vital(this.state.account)
-                                          .send({from: this.state.account})
+                .send({ from: this.state.account })
         );
     }
 
@@ -60,30 +68,67 @@ export default class OnlineServices extends Component {
 
         console.log(
             this.state.web_service.methods.create_realID(this.name, identifier,
-                                                         this.address, year, this.dob)
-                                          .send({
-                                                from: this.state.account,
-                                                gas: '200000',
-                                                value: this.state.web3.utils.toWei('0.05', 'ether')
-                                            })
-                                          .on('error', (e) => {
-                                              window.alert('License not yet expired!')
-                                            })
+                this.address, year, this.dob)
+                .send({
+                    from: this.state.account,
+                    gas: '200000',
+                    value: this.state.web3.utils.toWei('0.05', 'ether')
+                })
+                .on('error', (e) => {
+                    window.alert('License not yet expired!')
+                })
         );
     }
+
+    async viewInfo() {
+        const information = this.state.services.methods.getInfo(this.state.account).call().then((results => {
+            this.setState({ Info: Object.values(results) })
+        }))
+    }
+    async viewLicense() {
+        const information = this.state.services.methods.getLicense(this.state.account).call().then((results => {
+            this.setState({ DL: Object.values(results) })
+        }))
+    }
+    async viewVital() {
+        const information = this.state.services.methods.getVital(this.state.account).call().then((results => {
+            this.setState({ Vital: Object.values(results) })
+        }))
+    }
+    async viewAddress() {
+        const information = this.state.services.methods.getAddress(this.state.account).call().then((results => {
+            this.setState({ Address: Object.values(results) })
+        }))
+    }
+
 
 
     render() {
 
-        return(
-            <div style={{width: '70%', margin: '0 auto', padding: '50px'}}>
-                <div style={{background: 'white', borderRadius: '10px', padding: '40px'}}>
+        return (
+            <div style={{ width: '70%', margin: '0 auto', padding: '50px' }}>
+                <div style={{ background: 'white', borderRadius: '10px', padding: '40px' }}>
                     <div style={{ textAlign: "center" }}>
+                        <Button variant="primary" onClick={() => {
+
+                            this.setState({
+                                dl_renew: 0,
+                                address_change: 0,
+                                vital_record: 0,
+                                real_id: 0,
+                                MyInfo: 1,
+                            })
+                            this.viewAddress(this.state.account)
+                            this.viewInfo(this.state.account)
+                            this.viewLicense(this.state.account)
+                        }
+                        }>My Information</Button>{' '}
                         <Button variant="primary" onClick={() => this.setState({
                             dl_renew: 1,
                             address_change: 0,
                             vital_record: 0,
                             real_id: 0,
+                            MyInfo: 0,
                         })}>Driver's License Renewal</Button>{' '}
 
                         <Button variant="primary" onClick={() => this.setState({
@@ -91,11 +136,13 @@ export default class OnlineServices extends Component {
                             address_change: 1,
                             vital_record: 0,
                             real_id: 0,
+                            MyInfo: 0,
                         })}>Change Address</Button>{' '}
 
                         <Button variant="primary" onClick={() => {
-                            this.setState({ dl_renew: 0, address_change: 0,
-                                            vital_record: 1, real_id: 0,
+                            this.setState({
+                                dl_renew: 0, address_change: 0,
+                                vital_record: 1, real_id: 0, MyInfo: 0,
                             })
                             this.view_record()
                         }}>Obtain Vital Record</Button>{' '}
@@ -105,13 +152,55 @@ export default class OnlineServices extends Component {
                             address_change: 0,
                             vital_record: 0,
                             real_id: 1,
+                            MyInfo: 0,
                         })}>Real ID</Button>{' '}
                     </div>
+                    {
+                        this.state.MyInfo === 1 ? (
+                            <div style={{ textAlign: "center" }}>
+                                <br />
+                                {this.state.Info !== null && this.state.Address !== null && this.state.DL !== null ? (
+                                    <div style={{ fontSize: "16px", textAlign: "center"}}>
+                                        <div>{console.log(this.state)}</div>
+                                        <thead style={{ fontSize: "16px", textAlign: "center"}} >
+                                            <tr>
+                                                <th>Name</th>
+                                                <td>{this.state.Info[0]}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Date of Birth</th>
+                                                <td>{this.state.Info[1]}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Address</th>
+                                                <td>{this.state.Address[0]}. {this.state.Address[1]}, {this.state.Address[2]}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>License ID Number</th>
+                                                <td>{this.state.DL[0]}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>License EXP.</th>
+                                                <td>{this.state.DL[1]}</td>
+                                            </tr>
+                                    
 
+                                        </thead>
+                                        
+                                    </div>
+
+                                ) : (
+                                    <div />
+                                )}
+                            </div>
+                        ) : (
+                            <div />
+                        )
+                    }
                     {
                         this.state.dl_renew === 1 ? (
                             <div>
-                                d
+                                <div></div>
                             </div>
                         ) : (
                             <div />
@@ -119,7 +208,7 @@ export default class OnlineServices extends Component {
                     }
 
                     {
-                       this.state.address_change === 1 ? (
+                        this.state.address_change === 1 ? (
                             <div>
                                 e
                             </div>
@@ -129,8 +218,8 @@ export default class OnlineServices extends Component {
                     }
 
                     {
-                       this.state.vital_record === 1 ? (
-                            <div style={{textAlign: 'center'}}>
+                        this.state.vital_record === 1 ? (
+                            <div style={{ textAlign: 'center' }}>
                                 <br></br>
                                 <h2>Vital Records Available</h2>
 
@@ -181,8 +270,8 @@ export default class OnlineServices extends Component {
                     }
 
                     {
-                       this.state.real_id === 1 ? (
-                            <div style={{paddingLeft: '15%', paddingRight: '15%'}}>
+                        this.state.real_id === 1 ? (
+                            <div style={{ paddingLeft: '15%', paddingRight: '15%' }}>
                                 <form onSubmit={(event) => this.realID_request(event)}>
                                     <br></br>
 
@@ -204,7 +293,7 @@ export default class OnlineServices extends Component {
 
                                     <br></br>
 
-                                    <div style={{margin: '0 auto', textAlign: 'center'}}>
+                                    <div style={{ margin: '0 auto', textAlign: 'center' }}>
                                         <input type='submit' value={'Submit Request'} />
                                     </div>
                                 </form>
