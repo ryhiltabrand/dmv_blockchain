@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import Button from 'react-bootstrap/Button';
 import Web3 from "web3";
+import VehicleServices from '../../eth/contracts/VehicleServices.json'
 
 
 var _ = require("lodash");
@@ -27,9 +28,11 @@ export default class VehicleS extends Component {
             vehicle: this.props.vehicle,
             reg: this.props.registration,
             loading: false,
+            vAddress: null,
 
             v: null,
             r: null,
+            tester: null,
         };
     }
 
@@ -87,8 +90,9 @@ export default class VehicleS extends Component {
         })
     }
 
-    RegisterCar = (vin) => {
-        this.state.reg.methods.registerCar(vin, '2022').send({ from: this.state.account }).on("transactionHash", (hash) => {
+    async RegisterCar (vin) {
+        const networkId = await this.state.web3.eth.net.getId();
+        this.state.reg.methods.registerCar(vin, '2022', VehicleServices.networks[networkId].address).send({ from: this.state.account }).on("transactionHash", (hash) => {
             this.setState({
                 loading: false,
             });
@@ -109,7 +113,18 @@ export default class VehicleS extends Component {
 
     }
 
+    async testv(vin) {
+        //console.log(Web3.utils.asciiToHex(vin))
+        const networkId = await this.state.web3.eth.net.getId();
+        const reg = this.state.reg.methods.test(VehicleServices.networks[networkId].address,Web3.utils.asciiToHex(vin)).call().then((results => {
+            
+            console.log(results)
+            this.setState({ tester: Object.values(results) })
+        }))
 
+        //const vehicle  = await this.state.methods.vehicleMap(Web3.utils.asciiToHex(vin).call())
+
+    }
 
     render() {
         return (
@@ -140,20 +155,7 @@ export default class VehicleS extends Component {
                             Report: 0,
                             view: 0,
                         })}>Title A Vehicle</Button>{' '}
-                        <Button variant="primary" onClick={() => this.setState({
-                            Transfer: 0,
-                            Title: 0,
-                            Register: 1,
-                            Report: 0,
-                            view: 0,
-                        })}>Register Renewal</Button>{' '}
-                        <Button variant="primary" onClick={() => this.setState({
-                            Transfer: 0,
-                            Title: 0,
-                            Register: 0,
-                            Report: 1,
-                            view: 0,
-                        })}>Report Vehicle Status</Button>{' '}
+
                     </div>
 
                     {this.state.loaded !== false ? (
@@ -170,6 +172,7 @@ export default class VehicleS extends Component {
                                                 const vin = this.vin.value;
                                                 this.viewCar(vin)
                                                 this.viewReg(vin)
+                                                this.testv(vin)
                                                 //this.uploadFile(name, dob, sa, vehicle);
                                             }}
                                         >
@@ -195,9 +198,9 @@ export default class VehicleS extends Component {
                                         </form>
                                         <p>&nbsp;</p>
 
-                                        {this.state.v !== null && this.state.r !== null ? (
+                                        {this.state.v !== null && this.state.r !== null &&  this.state.tester !== null ? (
                                             <div>
-                                                <div></div>
+                                                <div>{this.state.tester}</div>
                                                 <thead style={{ fontSize: "12px" }} >
                                                     <tr>
                                                         <th>Owner</th>
@@ -367,104 +370,8 @@ export default class VehicleS extends Component {
                                 ) : (
                                     <div />
                                 )}
-                                {this.state.Register === 1 ? (
-                                    <div style={{ textAlign: "center" }}>
-                                        <p>&nbsp;</p>
-                                        <div>Registration</div>
-                                        <form
-                                            onSubmit={(event) => {
-                                                event.preventDefault();
-                                                const vin = this.vin.value;
-                                                const pub = this.pub.value;
-                                                this.TransferCar(vin, pub)
-                                                //this.uploadFile(name, dob, sa, vehicle);
-
-                                            }}
-                                        >
-                                            <div className="form-group">
-                                                <br></br>
-                                                <input
-                                                    id="vin"
-                                                    type="text"
-                                                    ref={(input) => {
-                                                        this.vin = input;
-                                                    }}
-                                                    className="form-control text-monospace"
-                                                    placeholder="What is your vehicles VIN..."
-                                                    required
-                                                />
-                                                <input
-                                                    id="newOwner"
-                                                    type="text"
-                                                    ref={(input) => {
-                                                        this.pub = input;
-                                                    }}
-                                                    className="form-control text-monospace"
-                                                    placeholder="New Owners Public Key..."
-                                                    required
-                                                />
-
-                                            </div>
-
-                                            <br />
-                                            <button type="submit" className="btn-primary btn-block">
-                                                <b>Submit!</b>
-                                            </button>
-                                        </form>
-                                        <p>&nbsp;</p>
-                                    </div>
-                                ) : (
-                                    <div />
-                                )}
-                                {this.state.Report === 1 ? (
-                                    <div style={{ textAlign: "center" }}>
-                                        <p>&nbsp;</p>
-                                        <div>Report</div>
-                                        <form
-                                            onSubmit={(event) => {
-                                                event.preventDefault();
-                                                const vin = this.vin.value;
-                                                const pub = this.pub.value;
-                                                this.TransferCar(vin, pub)
-                                                //this.uploadFile(name, dob, sa, vehicle);
-
-                                            }}
-                                        >
-                                            <div className="form-group">
-                                                <br></br>
-                                                <input
-                                                    id="vin"
-                                                    type="text"
-                                                    ref={(input) => {
-                                                        this.vin = input;
-                                                    }}
-                                                    className="form-control text-monospace"
-                                                    placeholder="What is your vehicles VIN..."
-                                                    required
-                                                />
-                                                <input
-                                                    id="newOwner"
-                                                    type="text"
-                                                    ref={(input) => {
-                                                        this.pub = input;
-                                                    }}
-                                                    className="form-control text-monospace"
-                                                    placeholder="New Owners Public Key..."
-                                                    required
-                                                />
-
-                                            </div>
-
-                                            <br />
-                                            <button type="submit" className="btn-primary btn-block">
-                                                <b>Submit!</b>
-                                            </button>
-                                        </form>
-                                        <p>&nbsp;</p>
-                                    </div>
-                                ) : (
-                                    <div />
-                                )}
+                                
+                               
                             </div>
                         </div>
                     ) : (

@@ -29,7 +29,7 @@ contract Ownable {
 
 contract VehicleServices is Ownable {
     bytes32[] vins;
-    mapping(bytes32 => Vehicle) vehicleMap;
+    mapping(bytes32 => Vehicle) public vehicleMap;
 
     event NewVehicle(bytes32 _vin, string vowner);
 
@@ -155,11 +155,15 @@ contract VehicleServices is Ownable {
         );
         //return (vin, name, year, make, model, registrationStatus, registrationYear);
     }
+    function getMap(bytes32 _vin) public view returns(address) {
+        return(vehicleMap[_vin].vowner);
+    }
 }
 
-contract registrationService is VehicleServices {
+contract registrationService {
     
     mapping(bytes32 => Registration) registrationeMap;
+    
 
     struct Registration {
         bytes32 vin;
@@ -167,7 +171,17 @@ contract registrationService is VehicleServices {
         string year;
     }
 
-    function registerCar(bytes32 _vin, string memory _year) public {
+    function isOwner(bytes32 _vin, address testa) public view returns (bool) {
+        
+        return msg.sender == VehicleServices(testa).getMap(_vin);
+    }
+    modifier onlyOwner(bytes32 _vin, address testa) {
+        require(isOwner(_vin, testa), "Function accessible only by the owner !!");
+        _;
+    }
+
+    function registerCar(bytes32 _vin, string memory _year, address testa) public  onlyOwner(_vin, testa) {
+       
         registrationeMap[_vin]=Registration(_vin, msg.sender,_year);
     }
 
@@ -175,6 +189,12 @@ contract registrationService is VehicleServices {
         return(
             registrationeMap[_vin].vin, registrationeMap[_vin].vowner, registrationeMap[_vin].year
         );
+    }
+    function test(address testa,bytes32 _vin) external view returns(address x){
+        //VehicleServices _v;
+        //address testa = 0x3e196087A91318AdA8A5fE63E227400406eA8Fd9;
+        x =VehicleServices(testa).getMap(_vin);
+        
     }
 }
 /*contract VehicleServices {
